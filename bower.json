@@ -27,8 +27,8 @@
     "tests"
   ],
   "dependencies": {
-    "davecourtois/cargowebcomponents/tree/master/components/growl":"latest",
-    "davecourtois/cargowebcomponents/tree/master/components/autocomplete":"latest",
-    "davecourtois/cargowebcomponents/tree/master/components/dialog":"latest"
+    "davecourtois/cargowebcomponents/tree/master/components/growl": "latest",
+    "github.com/davecourtois/cargowebcomponents/tree/master/components/autocomplete": "latest",
+    "davecourtois/cargowebcomponents/tree/master/components/dialog": "latest"
   }
 }
