@@ -16,7 +16,8 @@
     "sorter",
     "login",
     "dialog",
-    "language"
+    "language",
+    "file"
   ],
   "license": "Apache-2.0",
   "ignore": [
