@@ -1,5 +1,5 @@
 {
-  "name": "elementui",
+  "name": "@davecourtois/elementui",
   "version": "1.0.0",
   "description": "A collection of web-component based on polymer 3",
   "main": "index.js",
