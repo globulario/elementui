@@ -1,0 +1,31 @@
+{
+  "name": "elementui",
+  "version": "1.0.0",
+  "description": "A collection of web-component based on polymer 3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davecourtois/elementui.git"
+  },
+  "keywords": [
+    "dialog",
+    "file",
+    "autocomplete",
+    "growl",
+    "table",
+    "menu",
+    "login",
+    "language"
+  ],
+  "dependencies": {
+  },
+  "author": "Dave Courtois",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/davecourtois/elementui/issues"
+  },
+  "homepage": "https://github.com/davecourtois/elementui#readme"
+}
