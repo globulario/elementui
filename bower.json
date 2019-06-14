@@ -1,0 +1,29 @@
+{
+  "name": "elementui",
+  "homepage": "https://github.com/davecourtois/elementui",
+  "authors": [
+    "davecourtois <dave.courtois60@gmail.com>"
+  ],
+  "description": "A collection of web-component created with polymer 3",
+  "main": "",
+  "keywords": [
+    "element-collection",
+    "table",
+    "menu",
+    "growl",
+    "autocomplete",
+    "filter",
+    "sorter",
+    "login",
+    "dialog",
+    "language"
+  ],
+  "license": "Apache-2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
