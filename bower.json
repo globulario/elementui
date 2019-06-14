@@ -25,5 +25,10 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "growl": "davecourtois/cargowebcomponents/tree/master/components/growl",
+    "autocomplete": "davecourtois/cargowebcomponents/tree/master/components/autocomplete",
+    "dialog": "davecourtois/cargowebcomponents/tree/master/components/dialog"
+  }
 }
