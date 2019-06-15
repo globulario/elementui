@@ -7,4 +7,4 @@ Enought talking let look at components!
 
 ## Another Dialog
 Yes I create another dialog... My dialog is moveable, resizable and extensible. if you are currious to see it there is a link,
-[elementui dialog](https://www.globular.app/?page=elementui,section=elementui_dialog#elementui_dialog)
+[elementui dialog](https://www.globular.app/?page=elementui,section=elementui_dialog)
