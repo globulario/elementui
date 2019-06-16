@@ -18,25 +18,27 @@ class TableElement extends PolymerElement {
   constructor() {
     super();
     this.rowheight = -1; // in pixel...
-
     // Keep the position in the data.
+
     this.index = -1; // Scroll div.
 
     this.scrollDiv = null; // because some browser limit the number of potential 
-
     // number of rows in a grid, multiple gids will be use 
     // to display larger table.
+
     this.tiles = []; // Keep reference of table sorters.
 
     this.sorters = []; // Keep reference of table filters.
 
     this.filters = []; // Index of rows that respect the filters.
 
-    this.filtered = []; // a pointer to the header.
+    this.filtered = {}; // Contain the list index of filtered.
+
+    this.sorted = []; // Contain the array of sorted values.
 
     this.header = null; // cells are created once and recycled to save
-
     // browser ressources.
+
     this.cells = []; // contain the table menu.
 
     this.menu = null; // Here I will link the body columns whit the  header columns.
@@ -139,6 +141,7 @@ class TableElement extends PolymerElement {
         for (var i = 0; i < header.children.length; i++) {
           value += header.children[i].getBoundingClientRect().width + "px";
           totalWidth += header.children[i].getBoundingClientRect().width;
+
           if (i < header.children.length - 1) {
             value += " ";
           }
@@ -153,8 +156,9 @@ class TableElement extends PolymerElement {
         if (table.width == undefined) {
           table.style.width = totalWidth + "px";
           table.width = totalWidth;
-        } // set tiles columns width.
+        }
 
+        // set tiles columns width.
         for (var i = 0; i < tiles.length; i++) {
           tiles[i].element.style.gridTemplateColumns = value;
         }
@@ -200,40 +204,25 @@ class TableElement extends PolymerElement {
       }
     }
   }
+
   /**
    * return the current row index.
    */
-
-
   getIndex() {
     var index = 0;
-
     if (this.scrollDiv.element.scrollTop != undefined) {
       index = parseInt(this.scrollDiv.element.scrollTop / this.rowheight);
     }
-
     return index;
   }
 
   hasFilter() {
-    var hasFilter_ = false;
-
-    for (var i = 0; i < this.filters.length; i++) {
-      if (this.filters[i].filter != null) {
-        if (this.filters[i].filter.expressions.length > 0 || this.filters[i].filter.filters.length) {
-          hasFilter_ = true;
-          break;
-        }
-      }
-    }
-
-    return hasFilter_;
+    return this.getFilters().length > 0;
   }
+
   /**
    * Render 
    */
-
-
   render() {
     // first of all I will get the current index.
     var index = this.getIndex();
@@ -244,9 +233,9 @@ class TableElement extends PolymerElement {
 
       for (var i = 0; i < this.tiles.length; i++) {
         this.tiles[i].removeAllChilds();
-      } // Represent the number of visible items to display, I round it to display entire row.
+      }
 
-
+      // Represent the number of visible items to display, I round it to display entire row.
       var max = Math.ceil(this.clientHeight / this.rowheight); // create cells once.
 
       if (max == 0 && this.style.maxHeight != undefined) {
@@ -308,11 +297,10 @@ class TableElement extends PolymerElement {
       }
     }
   }
+
   /**
    * That function is call when the table is ready to be diplay.
    */
-
-
   ready() {
     super.ready(); // The position.
 
@@ -330,24 +318,21 @@ class TableElement extends PolymerElement {
         if (this.header.children[i].children[j].tagName == "TABLE-SORTER-ELEMENT") {
           var sorter = this.header.children[i].children[j];
           sorter.childSorter = null;
-
           if (sorter.state != undefined) {
             if (sorter.state != 0) {
               this.sorters[sorter.order - 1] = sorter;
             }
           }
-
           sorter.index = this.sorters.length; // push the sorter into the array.
           this.sorters.push(sorter);
-
         } else if (this.header.children[i].children[j].tagName == "TABLE-FILTER-ELEMENT") {
           var filter = this.header.children[i].children[j];
           filter.index = this.filters.length;
           this.filters.push(filter);
         }
-      } // Now I will set the data type.
+      }
 
-
+      // Now I will set the data type.
       if (this.header.children[i].typename == undefined) {
         for (var j = 0; j < this.data.length; j++) {
           if (this.data[j][i] != null) {
@@ -356,9 +341,9 @@ class TableElement extends PolymerElement {
           }
         }
       }
-    } // Here I will create the table dropdown menu.
+    }
 
-
+    // Here I will create the table dropdown menu.
     if (!this.hidemenu) {
       this.menu = createElement(null, {
         "tag": "dropdown-menu-element"
@@ -441,21 +426,9 @@ class TableElement extends PolymerElement {
         this.menu.getChildById("export-menu-item").element.action = function (table) {
           return function () {
             // Here I will get the filtered data.
-            var values = table.getData(); // Remove filtered values.
-
-            if (table.filtered.length > 0) {
-              var data = [];
-
-              for (var i = 0; i < values.length; i++) {
-                if (table.filtered.indexOf(values[i].index) != -1 || table.filtered.length == 0) {
-                  data.push(values[i]);
-                }
-              }
-
-              values = data;
+            if (Object.keys(table.filtered).length > 0) {
+              exportToCsv("data.csv", Object.values(table.filtered));
             }
-
-            exportToCsv("data.csv", values);
           };
         }(this);
       } // Remove the ordering
@@ -511,7 +484,6 @@ class TableElement extends PolymerElement {
 
     // If the header is fixed I will translate it to keep it 
     // at the required position.
-
     this.scrollDiv.element.addEventListener("scroll", function (table) {
       return function (e) {
         var header = table.children[0]; // If the header is fixe I will
@@ -530,11 +502,10 @@ class TableElement extends PolymerElement {
     }(this));
     this.refresh();
   }
+
   /**
    * Redraw all tile and values.
    */
-
-
   refresh() {
     // reset the index.
     this.index = -1; // remove acutal rows.
@@ -544,78 +515,78 @@ class TableElement extends PolymerElement {
     this.createTiles(); // Redisplay values.
 
     this.render();
-  } //////////////////////////////////////////////////////////////////////////////////////
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////
   // Data access function.
   //////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Return the table data.
    */
-
-
   getData() {
     if (this.data == undefined) {
       return [];
     }
-
     return this.data;
   }
+
   /**
    * Return the filtered data only.
    */
-
-
   getFilteredData() {
     // if no filter applied...
-    if (this.filtered.length == 0) {
-      return this.getData();
-    }
-
-    var data = [];
-
-    for (var i = 0; i < this.data.length; i++) {
-      if (this.filtered.indexOf(this.data[i].index) != -1) {
-        data.push(this.data[i]);
+    if (Object.keys(this.filtered).length == 0) {
+      if (this.getFilters().length > 0) {
+        return [] // all data are filtered.
       }
+      return this.data
     }
 
-    return data;
+    // So here if there sorter define I will made use of this.sorted to keep value.
+    if ( this.getSorters().length > 0) {
+      if(this.sorted == 0){
+        for(var i=0; i < this.data.length; i++){
+          if(this.filtered[this.data[i].index] != undefined){
+            this.sorted.push(this.data[i])
+          }
+        }
+      }
+      // return the list of sorted and filtered values.
+      return this.sorted
+    }
+
+    // Return the list of all filtered values.
+    return Object.values(this.filtered);
   }
+
   /**
    * Return the data contain at given position.
    * @param {*} row The table row
    * @param {*} column The table column.
    */
-
-
   getDataAt(row, column) {
     if (this.data == undefined) {
       return [];
-    } // return this.getFilteredData()[row][column];
-
-
+    }
     return this.data[row][column];
   }
+
   /**
    * Return the data for a given index.
    * @param {} index 
    */
-
-
   getRowData(index) {
     if (this.getData() == undefined) {
       return [];
-    } // return this.getFilteredData()[index];
-
-
+    }
     return this.data[index];
   }
+
   /**
    * Return all data for a given column
    * @param {*} index The column index.
    */
-
-
   getColumnData(index) {
     var data = [];
 
@@ -627,129 +598,158 @@ class TableElement extends PolymerElement {
         });
       }
     }
-
     return data;
   }
 
   getFilteredColumnData(index) {
-    if (this.filtered.length == 0) {
-      return this.getColumnData(index);
+    if (Object.keys(this.filtered).length == 0) {
+      if (this.getFilters().length > 0) {
+        return [] // all data are filtered.
+      }
+      return this.data
     }
 
     var data = [];
-
     if (this.getData() != undefined) {
-      for (var i = 0; i < this.getData().length; i++) {
-        if (this.filtered.indexOf(this.getData()[i].index) != -1) {
-          data.push({
-            "value": this.getData()[i][index],
-            "index": this.getData()[i].index
-          });
-        }
+      for (var i in this.filtered) {
+        data.push({
+          // push the filtered values.
+          "value": this.filtered[i][index],
+          "index": this.filtered[i].index
+        });
       }
     }
 
     return data;
   }
+
   /**
    * Return the visible data size.
    */
-
-
   size() {
     // if filter are applied.
-    if (this.filtered.length > 0) {
-      return this.filtered.length;
+    if (Object.keys(this.filtered).length > 0) {
+      return Object.keys(this.filtered).length;
     } else if (this.hasFilter()) {
-      return 0;
+      return 0; // all filtered.
     }
-
     return this.getData().length;
   }
+
+
+  /**
+   * Return the list of sorter.
+   */
+  getSorters() {
+    var sorters = new Array(); // reset data order.
+    for (var i = 0; i < this.sorters.length; i++) {
+      var sorter = this.sorters[i];
+      sorter.childSorter = null;
+      if (sorter.state != undefined) {
+        if (sorter.state != 0) {
+          sorters[sorter.order - 1] = sorter;
+        }
+      }
+    }
+    return sorters
+  }
+
   /**
    * Order a table. 
    * @param {*} side can be asc, desc or nothing.
    */
-
-
   sort() {
-    var sorters = new Array(); // reset data order.
-
     this.data.sort(function (a, b) {
       var indexA = parseInt(a.index);
       var indexB = parseInt(b.index);
       return indexA - indexB;
     });
 
-    for (var i = 0; i < this.sorters.length; i++) {
-      var sorter = this.sorters[i];
-      sorter.childSorter = null;
+    // empty the sorted list.
+    this.sorted = []
+    var sorters = this.getSorters()
 
-      if (sorter.state != undefined) {
-        if (sorter.state != 0) {
-          sorters[sorter.order - 1] = sorter;
-        }
-      }
-    } // I will copy values of rows to keep the original order...
+    // I will copy values of rows to keep the original order...
     // reset to default...
-
-
     if (sorters.length > 0) {
       // Link the sorter with each other...
       for (var i = 0; i < sorters.length - 1; i++) {
         sorters[i].childSorter = sorters[i + 1];
       } // Now I will call sort on the first sorter...
-
-
       if (sorters[0].state != 0) {
         sorters[0].sortValues(this.data);
       }
     }
   }
+
   /**
-   * Filter table values.
+   * Return the list of active filters.
    */
-
-
-  filter() {
-    var rows = [];
+  getFilters() {
     var filters = [];
-    this.filtered = [];
-
+    // put all filter in the save array.
     for (var i = 0; i < this.filters.length; i++) {
       if (this.filters[i].filter != null) {
         if (this.filters[i].filter.expressions.length > 0 || this.filters[i].filter.filters.length > 0) {
           filters.push(this.filters[i].filter);
         }
       }
-    } // filters are cumulative from column to columns.
+    }
+    return filters
+  }
 
+  /**
+   * Filter table values.
+   */
+  filter() {
 
+    // so here I will empty the filtered map.
+    this.filtered = {};
+
+    // Get the filters
+    var filters = this.getFilters()
+
+    function getData(table, indexs) {
+      var filtered = {}
+      for (var i = 0; i < indexs.length; i++) {
+        filtered[indexs[i]] = table.getRowData(indexs[i])
+      }
+      return filtered
+    }
+
+    // filters are cumulative from column to columns.
     if (filters.length > 0) {
-      this.filtered = filters[0].evaluate();
-
+      this.filtered = getData(this, filters[0].evaluate());
       if (filters.length > 1) {
         for (var i = 1; i < filters.length; i++) {
           for (var i = 1; i < filters.length; i++) {
-            this.filtered = intersectSafe(this.filtered, filters[i].evaluate());
+            var filtered = getData(this, filters[i].evaluate())
+            var filtered_ = {}
+            for(var id in filtered){
+              if(this.filtered[id] != undefined){
+                filtered_[id] = this.filtered[id]
+              }
+            }
+            this.filtered = filtered_
           }
         }
       } else {
-        this.filtered = filters[0].evaluate();
+        this.filtered = getData(this, filters[0].evaluate());
       }
-    } // Now I will set the filter in the menu.
+    }
 
-
+    // Now I will set the filter in the menu.
     if (!this.hidefilter) {
       var filterMenuItems = this.menu.getChildById("filter-menu-items");
       filterMenuItems.element.parentNode.addEventListener("mouseover", function () {
         this.style.backgroundColor = "";
-      }); // hidden by default.
+      });
+
+      // hidden by default.
       // Here I will remove existing filer and expression and recreated it.
-
       filterMenuItems.removeAllChilds();
-
       for (var i = 0; i < filters.length; i++) {
+
         // So here I will create the menu item asscoiated with each filter and given.
         var filter = filters[i];
 
@@ -757,7 +757,7 @@ class TableElement extends PolymerElement {
           var filterMenuDiv = filterMenuItems.appendElement({
             "tag": "div",
             "style": "display: flex; justify-items: center; align-items: center;"
-          }).down(); // So here i will create the delete btn.
+          }).down();
 
           this.deleteBtn = filterMenuDiv.appendElement({
             "tag": "paper-icon-button",
@@ -788,15 +788,14 @@ class TableElement extends PolymerElement {
           }(filter, filterMenuItems, filterMenuDiv, this);
         }
       }
-    } // In that case I will call the onfilter event.
+    }
 
-
+    // In that case I will call the onfilter event.
     for (var i = 0; i < this.filters.length; i++) {
       if (this.filters[i].filter != null) {
         if (this.filters[i].onfilter != undefined) {
           // Call the render function with div and value as parameter.
           var values = this.filters[i].filter.getFilterdValues();
-
           if (isString(this.filters[i].onfilter)) {
             eval(this.filters[i].onfilter + "(values)");
           } else {
@@ -806,7 +805,6 @@ class TableElement extends PolymerElement {
       }
     }
   }
-
 }
 
 customElements.define('table-element', TableElement);

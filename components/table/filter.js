@@ -1,9 +1,9 @@
 // Polymer dependencies
-import { PolymerElement, html } from "../../../../@polymer/polymer/polymer-element.js";
-import "../../../../@polymer/paper-button/paper-button.js";
-import "../../../../@polymer/paper-input/paper-input.js";
-import "../../../../@polymer/paper-icon-button/paper-icon-button.js";
-import "../../../../@polymer/iron-icons/iron-icons.js"; // List of imported functionality.
+import { PolymerElement, html } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/iron-icons/iron-icons.js"; // List of imported functionality.
 
 import { createElement } from "../element.js";
 import { attachAutoComplete } from "../autocomplete/autocomplete.js";
@@ -52,6 +52,7 @@ class Expression {
     this.operatorDiv.element.onmouseout = function () {
       this.style.cursor = "default";
     }; // The operator selector.
+
 
     this.operatorSelector = this.operatorDiv.appendElement({
       "tag": "select",
@@ -136,6 +137,10 @@ class Expression {
     }(this.valueDiv);
   } // send blur event to operator selector and 
 
+  // Test if the expression is empty.
+  isEmpty() {
+    return this.input.element.value.length == 0
+  }
 
   blur() {
     this.operatorSelector.element.style.display = "none";
@@ -217,21 +222,15 @@ class NumericExpression extends Expression {
     this.displayValueDiv.element.innerHTML = "0";
     this.displayValueDiv.element.style.minWidth = "60px";
   }
+
   /**
    * Evaluate the filter.
    * Return the list of rows that meet the expression.
    */
-
-
   evaluate() {
     // The rows that meet the expression.
     var rows = [];
     var v = parseFloat(this.input.element.value);
-
-    if (v == "") {
-      v = 0;
-    }
-
     var op = this.operatorSelector.element.options[this.operatorSelector.element.selectedIndex].value;
     var values = this.parent.getValues();
 
@@ -260,6 +259,7 @@ class StringExpression extends Expression {
     super(parent); // Selector is static in that case.
 
     this.selectorDiv.element.innerHTML = "text"; // So here I will set the list of available operation.
+
     this.operatorSelector.appendElement({
       "tag": "option",
       "value": "contain",
@@ -449,8 +449,6 @@ class BooleanExpression extends Expression {
    * Evaluate the filter.
    * Return the list of rows that meet the expression.
    */
-
-
   evaluate() {
     var rows = [];
     var op = this.operatorSelector.element.options[this.operatorSelector.element.selectedIndex].value;
@@ -458,7 +456,6 @@ class BooleanExpression extends Expression {
 
     for (var i = 0; i < values.length; i++) {
       var value = values[i].value; // Now I will test the value contain in the operator div.
-
       var valid = false;
 
       if (op == "isTrue") {
@@ -715,7 +712,6 @@ class DateFieldSelector {
     this.setSelection();
   } // Return the string value.
 
-
   getValue() {
     var selections = []; // create a date from selection.
 
@@ -871,7 +867,6 @@ class DateExpression extends Expression {
     }); // The second set are operator more specific to date.
 
     this.selectorDiv.element.innerHTML = "date"; // Remove the input ...
-
     this.input.element.parentNode.removeChild(this.input.element);
     this.displayValueDiv.element.innerHTML = ""; // Selector is static in that case.
 
@@ -881,17 +876,17 @@ class DateExpression extends Expression {
    * Evaluate the filter.
    * Return the list of rows that meet the expression.
    */
-
+  isEmpty() {
+    function isValidDate(d) {
+      return d instanceof Date && !isNaN(d);
+    }
+    return !isValidDate(this.fieldSelector.getValue())
+  }
 
   evaluate() {
     // The rows that meet the expression.
     var rows = [];
     var v = this.fieldSelector.getValue();
-
-    if (v == "") {
-      v = 0;
-    }
-
     var op = this.operatorSelector.element.options[this.operatorSelector.element.selectedIndex].value;
     var values = this.parent.getValues();
 
@@ -992,13 +987,15 @@ class Filter {
     this.panel = parentElement.appendElement({
       "tag": "div",
       "style": "display: flex; position: relative;"
-    }).down(); // The panel that will contain the expressions.
+    }).down();
 
+    // The panel that will contain the expressions.
     this.expressionsPanel = this.panel.appendElement({
       "tag": "div",
       "style": "flex: 1;"
-    }).down(); // The panel that will display the OR/AND operator...
+    }).down();
 
+    // The panel that will display the OR/AND operator...
     this.color = this.getColors().splice(0, 1); // The panel that contain the filter operator.
 
     this.operatorPanel = this.panel.appendElement({
@@ -1043,9 +1040,9 @@ class Filter {
 
     this.andOrBtn.element.onmouseout = function () {
       this.style.cursor = "default";
-    }; // append a new expression to the group.
+    };
 
-
+    // append a new expression to the group.
     this.addExpressionBtn.element.onclick = function (filter) {
       return function (evt) {
         evt.stopPropagation(); // append a new expression.
@@ -1060,14 +1057,15 @@ class Filter {
           filter.addExpressionBtn.element.click();
         }
       };
-    }(this); // Set the append/delete filter menu
+    }(this);
 
-
+    // Set the append/delete filter menu
     this.filterMenu = this.panel.appendElement({
       "tag": "div",
       "style": "z-index: 1; position: absolute; background-color: white; top:0px; -webkit-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);  -moz-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);  box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.75);"
-    }).down(); // Remove/add btn
+    }).down();
 
+    // Remove/add btn
     this.addFilterBtn = this.filterMenu.appendElement({
       "tag": "paper-icon-button",
       "icon": "add",
@@ -1093,9 +1091,9 @@ class Filter {
 
     this.clearFileterBtn.element.onmouseout = this.addFilterBtn.element.onmouseout = function () {
       this.style.cursor = "default";
-    }; // remove a given filter.
+    };
 
-
+    // remove a given filter.
     this.deleteFileterBtn.element.onclick = function (filter) {
       return function () {
         for (var i = 0; i < filter.parent.filters.length; i++) {
@@ -1103,9 +1101,9 @@ class Filter {
             filter.parent.filters.splice(i, 1);
             break;
           }
-        } // remove the filter.
+        }
 
-
+        // remove the filter.
         filter.getColors().push(filter.color);
         filter.panel.element.parentNode.removeChild(filter.panel.element);
 
@@ -1140,28 +1138,36 @@ class Filter {
         evt.stopPropagation();
         filterMenu.element.style.display = "none";
       };
-    }(this.filterMenu); // Append a sub-filter
+    }(this.filterMenu);
 
-
+    // Append a sub-filter
     this.addFilterBtn.element.onclick = function (filter) {
       return function () {
         filter.appendFilter();
       };
     }(this);
+  }
 
-    this.expressionsPanel.element.click()
+  isEmpty() {
+    for (var i = 0; i < this.expressions.length; i++) {
+      if (!this.expressions[i].isEmpty()) {
+        return false
+      }
+    }
+    // if it contain filter.
+    return this.filters.length == 0;
   }
 
   getValues() {
     return this.table.getColumnData(this.index);
-  } // Return the color list for a filter.
+  }
 
-
+  // Return the color list for a filter.
   getFilterdValues() {
     return this.table.getFilteredColumnData(this.index);
-  } // Return the color list for a filter.
+  }
 
-
+  // Return the color list for a filter.
   getColors() {
     if (this.colors.length == 0) {
       if (this.parent.colors == undefined) {
@@ -1172,19 +1178,19 @@ class Filter {
     }
 
     return this.colors;
-  } // remove all filters and expressions.
+  }
 
-
+  // remove all filters and expressions.
   clear() {
     for (var i = 0; i < this.filters.length; i++) {
       this.filters[i].panel.element.parentNode.removeChild(this.filters[i].panel.element);
       this.filters[i].clear(); // set back the color in the filter.
 
       this.getColors().push(this.filters[i].color);
-    } // this.panel.element.parentNode.removeChild(this.panel.element)
+    }
+
+    // this.panel.element.parentNode.removeChild(this.panel.element)
     // remove the filter from the list.
-
-
     this.filters = []; // Now the expression.
 
     for (var i = 0; i < this.expressions.length; i++) {
@@ -1192,7 +1198,6 @@ class Filter {
     }
 
     this.expressions = []; // hide the and/or text.
-
     this.andOrBtn.element.style.display = "none";
   }
 
@@ -1204,12 +1209,11 @@ class Filter {
     for (var i = 0; i < this.expressions.length; i++) {
       this.expressions[i].blur();
     }
-  } // append the empty expression...
+  }
 
-
+  // append the empty expression...
   appendExpression() {
     var expression;
-
     if (isNumeric(this.getValues()[0].value)) {
       // Here I will create a numeric expression.
       expression = new NumericExpression(this);
@@ -1231,9 +1235,9 @@ class Filter {
       this.andOrBtn.element.style.display = "block";
     } else {
       this.andOrBtn.element.style.display = "none";
-    } // Delete the expression from the filter.
+    }
 
-
+    // Delete the expression from the filter.
     expression.deleteBtn.element.onclick = function (index, expression, filter) {
       return function (evt) {
         evt.stopPropagation(); // remove the expression from the list.
@@ -1258,9 +1262,9 @@ class Filter {
         expression.panel.element.parentNode.removeChild(expression.panel.element);
       };
     }(this.expressions.length - 1, expression, this);
-  } // Append sub-filter...
+  }
 
-
+  // Append sub-filter...
   appendFilter() {
     var filter = new Filter(this, this.table, this.index);
     this.filters.push(filter);
@@ -1274,9 +1278,9 @@ class Filter {
     } else {
       this.andOrBtn.element.style.display = "none";
     }
-  } // Return the list of row to remove from the table values.
+  }
 
-
+  // Return the list of row to remove from the table values.
   evaluate() {
     // So here I will evaluate the filter and expression recursively...
     var rows_ = [];
@@ -1288,8 +1292,7 @@ class Filter {
 
     for (var i = 0; i < this.expressions.length; i++) {
       rows_.push(this.expressions[i].evaluate());
-    } // Now I will combine expression.
-
+    }
 
     if (this.operator == "OR") {
       // simply append the rows in the result.
@@ -1307,9 +1310,7 @@ class Filter {
           }
         }
       }
-    } // return the list of rows to remove.
-
-
+    }
     return rows.removeDuplicates().sort();
   }
 
@@ -1318,19 +1319,17 @@ class Filter {
 class TableFilterElement extends PolymerElement {
   constructor() {
     super();
-    this.filterBtn = null; // various parent references.
-
+    this.filterBtn = null;
     this.table = null;
     this.header = null;
     this.headerCell = null;
     this.filter = null;
     this.panel = null;
   }
+
   /**
    * The internal component properties.
    */
-
-
   static get properties() {
     return {
       /**
@@ -1340,11 +1339,10 @@ class TableFilterElement extends PolymerElement {
       onfilter: Function
     };
   }
+
   /**
    * That function is call when the table is ready to be diplay.
    */
-
-
   ready() {
     this.innerHTML = `
         <style>
@@ -1374,8 +1372,7 @@ class TableFilterElement extends PolymerElement {
     super.ready();
     this.table = this.parentNode.parentNode.parentNode;
     this.header = this.parentNode.parentNode;
-    this.headerCell = this.parentNode; // The filter btn.
-
+    this.headerCell = this.parentNode;
     this.filterBtn = this.children[1].children[0];
     this.headerCell.style.position = "relative";
     this.headerCell.style.paddingRight = "25px";
@@ -1401,11 +1398,27 @@ class TableFilterElement extends PolymerElement {
         }
       };
     }(this));
+
     this.panel = createElement(document.createElement("div"));
     document.body.appendChild(this.panel.element);
     this.panel.element.className = "filter-panel";
     this.panel.element.style.minWidth = "160px";
     this.panel.element.style.display = "none"; // So here I will create content of the filter.
+
+    // Here I will hide the filter panel if the mouse get out of it.
+    document.body.addEventListener("mousemove", function(filterPanel){
+      return function(evt){
+        if(filterPanel.style.display != "none"){
+          var isOutX = !(evt.pageX > filterPanel.offsetLeft && evt.pageX  < filterPanel.offsetLeft+filterPanel.offsetWidth + 35)
+          var isOutY =  !(evt.pageY + 20 > filterPanel.offsetTop && evt.pageY < filterPanel.offsetTop + filterPanel.offsetHeight)
+          var isIn = !(isOutX || isOutY)
+          if(!isIn){
+            // hide it.
+            filterPanel.style.display = "none"
+          }
+        }
+      }
+    }(this.panel.element))
 
     var color = window.getComputedStyle(this.header, null).getPropertyValue('background-color');
     var filterDiv = this.panel.appendElement({
@@ -1417,13 +1430,11 @@ class TableFilterElement extends PolymerElement {
       "tag": "div",
       "style": "width: 100%; margin-bottom: 2px; display: flex; justify-content: flex-end;"
     }).down();
-
     var applyBtn = buttonDiv.appendElement({
       "tag": "button",
       "innerHtml": "Apply",
       "style": "background-color: white; border: none; margin: 2px; font-size: 14px; -webkit-font-smoothing; antialiased; font-weight:normal;font-family:'Roboto', 'Noto', sans-serif;"
     }).down();
-
     var okBtn = buttonDiv.appendElement({
       "tag": "button",
       "innerHtml": "Ok",
@@ -1436,8 +1447,7 @@ class TableFilterElement extends PolymerElement {
 
     applyBtn.element.onmouseout = okBtn.element.onmouseout = this.filterBtn.onmouseout = function () {
       this.style.cursor = "default";
-    }; // Apply and close the window.
-
+    };
 
     okBtn.element.onclick = function (filter) {
       return function () {
@@ -1445,14 +1455,13 @@ class TableFilterElement extends PolymerElement {
 
         if (filter.filter.expressions.length == 0 && filter.filter.filters.length == 0) {
           filter.filterBtn.style.display = "none"; // Here I will keep a deep copy of the filter.
-        } // Also apply change.
+        }
 
-
+        // Also apply change.
         filter.table.filter(filter);
         filter.table.refresh();
       };
-    }(this); // Apply change and keep window open.
-
+    }(this);
 
     applyBtn.element.onclick = function (filter) {
       return function () {
@@ -1475,28 +1484,35 @@ class TableFilterElement extends PolymerElement {
         }
       };
     }(this, this.parentNode.parentNode.parentNode));
+
     /**
      * Display the panel...
      */
-
     this.filterBtn.onclick = function (tableFilter) {
       return function () {
         if (tableFilter.panel.element.style.display == "none") {
           tableFilter.panel.element.style.display = "flex";
+          if (tableFilter.filter == null) {
+            // Create new default filter if no filter exist...
+            tableFilter.filter = new Filter(tableFilter, tableFilter.table, tableFilter.headerCell.index);
+            tableFilter.filter.deleteFileterBtn.element.style.display = "none";
+          }
+          if (tableFilter.filter.expressions.length == 0) {
+            // also create an expression panel
+            tableFilter.filter.expressionsPanel.element.click();
+          }
         } else {
           tableFilter.panel.element.style.display = "none";
-        } // So here I will create the default filter and diplay it in the panel.
-
-
-        if (tableFilter.filter == null) {
-          // Create new default filter if no filter exist...
-          tableFilter.filter = new Filter(tableFilter, tableFilter.table, tableFilter.headerCell.index);
-          tableFilter.filter.deleteFileterBtn.element.style.display = "none";
+          // Here I will remove empty expressions.
+          for (var i = 0; i < tableFilter.filter.expressions.length; i++) {
+            if (tableFilter.filter.expressions[i].isEmpty()) {
+              tableFilter.filter.expressions[i].deleteBtn.element.click();
+            }
+          }
         }
       };
     }(this);
   }
-
 }
 
 customElements.define('table-filter-element', TableFilterElement);
