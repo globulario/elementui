@@ -6,9 +6,8 @@ import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/paper-input/paper-input.js'
 
 // List of imported functionality.
-import '../validator.js'
 import { createElement } from "../element.js"
-import { randomUUID } from "../utility.js"
+import { randomUUID, parseFunction } from "../utility.js"
 
 class LoginElement extends PolymerElement {
   constructor() {

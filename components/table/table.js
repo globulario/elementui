@@ -149,25 +149,26 @@ class TableElement extends PolymerElement {
 
         if (totalWidth == 0) {
           return;
-        }
-
-        // set tiles columns width.
+        } // set tiles columns width.
         // Set the table width
+
+
         if (table.width == undefined) {
           table.style.width = totalWidth + "px";
           table.width = totalWidth;
-        }
+        } // set tiles columns width.
 
-        // set tiles columns width.
         for (var i = 0; i < tiles.length; i++) {
           tiles[i].element.style.gridTemplateColumns = value;
         }
 
         if (!menu.hidemenu) {
-          // set the menu.
-          menu.element.parentNode.style.marginLeft = menu.element.children[0].offsetWidth - 1 + "px";
-          menu.element.style.left = -1 * menu.element.offsetWidth - 1 + "px";
+          var coord = getCoords(table)
+          table.style.marginLeft = menu.element.children[0].offsetWidth - 1 + "px";
+          menu.element.style.left = coord.left - menu.element.offsetWidth + "px";
+          menu.element.style.top = coord.top + "px"
         }
+        
       };
     }(this.tiles, this.scrollDiv.element, this.children[0], this.menu, this);
 
@@ -204,25 +205,29 @@ class TableElement extends PolymerElement {
       }
     }
   }
-
   /**
    * return the current row index.
    */
+
+
   getIndex() {
     var index = 0;
+
     if (this.scrollDiv.element.scrollTop != undefined) {
       index = parseInt(this.scrollDiv.element.scrollTop / this.rowheight);
     }
+
     return index;
   }
 
   hasFilter() {
     return this.getFilters().length > 0;
   }
-
   /**
    * Render 
    */
+
+
   render() {
     // first of all I will get the current index.
     var index = this.getIndex();
@@ -233,9 +238,9 @@ class TableElement extends PolymerElement {
 
       for (var i = 0; i < this.tiles.length; i++) {
         this.tiles[i].removeAllChilds();
-      }
+      } // Represent the number of visible items to display, I round it to display entire row.
 
-      // Represent the number of visible items to display, I round it to display entire row.
+
       var max = Math.ceil(this.clientHeight / this.rowheight); // create cells once.
 
       if (max == 0 && this.style.maxHeight != undefined) {
@@ -297,10 +302,11 @@ class TableElement extends PolymerElement {
       }
     }
   }
-
   /**
    * That function is call when the table is ready to be diplay.
    */
+
+
   ready() {
     super.ready(); // The position.
 
@@ -318,21 +324,24 @@ class TableElement extends PolymerElement {
         if (this.header.children[i].children[j].tagName == "TABLE-SORTER-ELEMENT") {
           var sorter = this.header.children[i].children[j];
           sorter.childSorter = null;
+
           if (sorter.state != undefined) {
             if (sorter.state != 0) {
               this.sorters[sorter.order - 1] = sorter;
             }
           }
+
           sorter.index = this.sorters.length; // push the sorter into the array.
+
           this.sorters.push(sorter);
         } else if (this.header.children[i].children[j].tagName == "TABLE-FILTER-ELEMENT") {
           var filter = this.header.children[i].children[j];
           filter.index = this.filters.length;
           this.filters.push(filter);
         }
-      }
+      } // Now I will set the data type.
 
-      // Now I will set the data type.
+
       if (this.header.children[i].typename == undefined) {
         for (var j = 0; j < this.data.length; j++) {
           if (this.data[j][i] != null) {
@@ -341,9 +350,9 @@ class TableElement extends PolymerElement {
           }
         }
       }
-    }
+    } // Here I will create the table dropdown menu.
 
-    // Here I will create the table dropdown menu.
+
     if (!this.hidemenu) {
       this.menu = createElement(null, {
         "tag": "dropdown-menu-element"
@@ -355,70 +364,73 @@ class TableElement extends PolymerElement {
         "tag": "iron-icon",
         "icon": "menu"
       }) // Remove all sorting menu.
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "unorder-menu-item",
-          "style": "text-agling: left;",
-          "action": ""
-        }).down().appendElement({
-          "tag": "iron-icon",
-          "icon": "sort",
-          "style": "height: 18px; width: 18px"
-        }).appendElement({
-          "tag": "span",
-          "innerHtml": "remove all sorter",
-          "style": "margin-left: 10px;"
-        }).up() // Now filetering
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "filter-menu-item",
-          "style": "text-agling: left;"
-        }).down().appendElement({
-          "tag": "iron-icon",
-          "id": "filter-menu-item-icon",
-          "icon": "filter-list",
-          "style": "height: 18px; width: 18px"
-        }).appendElement({
-          "tag": "span",
-          "id": "filter-menu-item-span",
-          "innerHtml": "filtering",
-          "style": "margin-left: 10px;"
-        }) // Remove all filter
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "unfilter-menu-item",
-          "style": "text-agling: left;",
-          "action": ""
-        }).down().appendElement({
-          "tag": "span",
-          "innerHtml": "remove all filter",
-          "style": "margin-left: 10px;"
-        }).up().appendElement({
-          "tag": "menu-item-element",
-          "separator": "true",
-          "style": "text-agling: left;"
-        }).down().appendElement({
-          "tag": "div",
-          "id": "filter-menu-items",
-          "style": "text-agling: left; display: flex; flex-direction: column;"
-        }).up().up() // The export menu button.
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "export-menu-item",
-          "style": "text-agling: left;",
-          "action": this.onexport
-        }).down().appendElement({
-          "tag": "iron-icon",
-          "icon": "file-download",
-          "style": "height: 18px; width: 18px"
-        }).appendElement({
-          "tag": "span",
-          "innerHtml": "export",
-          "style": "margin-left: 10px;"
-        }); // Set the menu
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "unorder-menu-item",
+        "style": "text-agling: left;",
+        "action": ""
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "icon": "sort",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "innerHtml": "remove all sorter",
+        "style": "margin-left: 10px;"
+      }).up() // Now filetering
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "filter-menu-item",
+        "style": "text-agling: left;"
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "id": "filter-menu-item-icon",
+        "icon": "filter-list",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "id": "filter-menu-item-span",
+        "innerHtml": "filtering",
+        "style": "margin-left: 10px;"
+      }) // Remove all filter
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "unfilter-menu-item",
+        "style": "text-agling: left;",
+        "action": ""
+      }).down().appendElement({
+        "tag": "span",
+        "innerHtml": "remove all filter",
+        "style": "margin-left: 10px;"
+      }).up().appendElement({
+        "tag": "menu-item-element",
+        "separator": "true",
+        "style": "text-agling: left;"
+      }).down().appendElement({
+        "tag": "div",
+        "id": "filter-menu-items",
+        "style": "text-agling: left; display: flex; flex-direction: column;"
+      }).up().up() // The export menu button.
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "export-menu-item",
+        "style": "text-agling: left;",
+        "action": this.onexport
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "icon": "file-download",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "innerHtml": "export",
+        "style": "margin-left: 10px;"
+      }); // Set the menu
 
-      this.appendChild(this.menu.element); // Postion the menu.
+      /* this.appendChild(this.menu.element);*/
+      // Append the element in the body so it will alway be visible.
+      document.body.appendChild(this.menu.element)
 
+      // Postion the menu.
       this.menu.element.style.position = "absolute"; // In that case I will overide the menu action.
 
       if (this.onexport == undefined) {
@@ -480,10 +492,10 @@ class TableElement extends PolymerElement {
 
     if (this.rowheight == -1) {
       this.rowheight = this.children[0].offsetHeight;
-    }
-
-    // If the header is fixed I will translate it to keep it 
+    } // If the header is fixed I will translate it to keep it 
     // at the required position.
+
+
     this.scrollDiv.element.addEventListener("scroll", function (table) {
       return function (e) {
         var header = table.children[0]; // If the header is fixe I will
@@ -502,10 +514,11 @@ class TableElement extends PolymerElement {
     }(this));
     this.refresh();
   }
-
   /**
    * Redraw all tile and values.
    */
+
+
   refresh() {
     // reset the index.
     this.index = -1; // remove acutal rows.
@@ -515,78 +528,87 @@ class TableElement extends PolymerElement {
     this.createTiles(); // Redisplay values.
 
     this.render();
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////
+  } //////////////////////////////////////////////////////////////////////////////////////
   // Data access function.
   //////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Return the table data.
    */
+
+
   getData() {
     if (this.data == undefined) {
       return [];
     }
+
     return this.data;
   }
-
   /**
    * Return the filtered data only.
    */
+
+
   getFilteredData() {
     // if no filter applied...
     if (Object.keys(this.filtered).length == 0) {
       if (this.getFilters().length > 0) {
-        return [] // all data are filtered.
+        return []; // all data are filtered.
       }
-      return this.data
-    }
 
-    // So here if there sorter define I will made use of this.sorted to keep value.
-    if ( this.getSorters().length > 0) {
-      if(this.sorted == 0){
-        for(var i=0; i < this.data.length; i++){
-          if(this.filtered[this.data[i].index] != undefined){
-            this.sorted.push(this.data[i])
+      return this.data;
+    } // So here if there sorter define I will made use of this.sorted to keep value.
+
+
+    if (this.getSorters().length > 0) {
+      if (this.sorted == 0) {
+        for (var i = 0; i < this.data.length; i++) {
+          if (this.filtered[this.data[i].index] != undefined) {
+            this.sorted.push(this.data[i]);
           }
         }
-      }
-      // return the list of sorted and filtered values.
-      return this.sorted
-    }
+      } // return the list of sorted and filtered values.
 
-    // Return the list of all filtered values.
+
+      return this.sorted;
+    } // Return the list of all filtered values.
+
+
     return Object.values(this.filtered);
   }
-
   /**
    * Return the data contain at given position.
    * @param {*} row The table row
    * @param {*} column The table column.
    */
+
+
   getDataAt(row, column) {
     if (this.data == undefined) {
       return [];
     }
+
     return this.data[row][column];
   }
-
   /**
    * Return the data for a given index.
    * @param {} index 
    */
+
+
   getRowData(index) {
     if (this.getData() == undefined) {
       return [];
     }
+
     return this.data[index];
   }
-
   /**
    * Return all data for a given column
    * @param {*} index The column index.
    */
+
+
   getColumnData(index) {
     var data = [];
 
@@ -598,18 +620,21 @@ class TableElement extends PolymerElement {
         });
       }
     }
+
     return data;
   }
 
   getFilteredColumnData(index) {
     if (Object.keys(this.filtered).length == 0) {
       if (this.getFilters().length > 0) {
-        return [] // all data are filtered.
+        return []; // all data are filtered.
       }
-      return this.data
+
+      return this.data;
     }
 
     var data = [];
+
     if (this.getData() != undefined) {
       for (var i in this.filtered) {
         data.push({
@@ -622,10 +647,11 @@ class TableElement extends PolymerElement {
 
     return data;
   }
-
   /**
    * Return the visible data size.
    */
+
+
   size() {
     // if filter are applied.
     if (Object.keys(this.filtered).length > 0) {
@@ -633,61 +659,67 @@ class TableElement extends PolymerElement {
     } else if (this.hasFilter()) {
       return 0; // all filtered.
     }
+
     return this.getData().length;
   }
-
-
   /**
    * Return the list of sorter.
    */
+
+
   getSorters() {
     var sorters = new Array(); // reset data order.
+
     for (var i = 0; i < this.sorters.length; i++) {
       var sorter = this.sorters[i];
       sorter.childSorter = null;
+
       if (sorter.state != undefined) {
         if (sorter.state != 0) {
           sorters[sorter.order - 1] = sorter;
         }
       }
     }
-    return sorters
-  }
 
+    return sorters;
+  }
   /**
    * Order a table. 
    * @param {*} side can be asc, desc or nothing.
    */
+
+
   sort() {
     this.data.sort(function (a, b) {
       var indexA = parseInt(a.index);
       var indexB = parseInt(b.index);
       return indexA - indexB;
-    });
+    }); // empty the sorted list.
 
-    // empty the sorted list.
-    this.sorted = []
-    var sorters = this.getSorters()
-
-    // I will copy values of rows to keep the original order...
+    this.sorted = [];
+    var sorters = this.getSorters(); // I will copy values of rows to keep the original order...
     // reset to default...
+
     if (sorters.length > 0) {
       // Link the sorter with each other...
       for (var i = 0; i < sorters.length - 1; i++) {
         sorters[i].childSorter = sorters[i + 1];
       } // Now I will call sort on the first sorter...
+
+
       if (sorters[0].state != 0) {
         sorters[0].sortValues(this.data);
       }
     }
   }
-
   /**
    * Return the list of active filters.
    */
+
+
   getFilters() {
-    var filters = [];
-    // put all filter in the save array.
+    var filters = []; // put all filter in the save array.
+
     for (var i = 0; i < this.filters.length; i++) {
       if (this.filters[i].filter != null) {
         if (this.filters[i].filter.expressions.length > 0 || this.filters[i].filter.filters.length > 0) {
@@ -695,61 +727,65 @@ class TableElement extends PolymerElement {
         }
       }
     }
-    return filters
-  }
 
+    return filters;
+  }
   /**
    * Filter table values.
    */
+
+
   filter() {
-
     // so here I will empty the filtered map.
-    this.filtered = {};
+    this.filtered = {}; // Get the filters
 
-    // Get the filters
-    var filters = this.getFilters()
+    var filters = this.getFilters();
 
     function getData(table, indexs) {
-      var filtered = {}
-      for (var i = 0; i < indexs.length; i++) {
-        filtered[indexs[i]] = table.getRowData(indexs[i])
-      }
-      return filtered
-    }
+      var filtered = {};
 
-    // filters are cumulative from column to columns.
+      for (var i = 0; i < indexs.length; i++) {
+        filtered[indexs[i]] = table.getRowData(indexs[i]);
+      }
+
+      return filtered;
+    } // filters are cumulative from column to columns.
+
+
     if (filters.length > 0) {
       this.filtered = getData(this, filters[0].evaluate());
+
       if (filters.length > 1) {
         for (var i = 1; i < filters.length; i++) {
           for (var i = 1; i < filters.length; i++) {
-            var filtered = getData(this, filters[i].evaluate())
-            var filtered_ = {}
-            for(var id in filtered){
-              if(this.filtered[id] != undefined){
-                filtered_[id] = this.filtered[id]
+            var filtered = getData(this, filters[i].evaluate());
+            var filtered_ = {};
+
+            for (var id in filtered) {
+              if (this.filtered[id] != undefined) {
+                filtered_[id] = this.filtered[id];
               }
             }
-            this.filtered = filtered_
+
+            this.filtered = filtered_;
           }
         }
       } else {
         this.filtered = getData(this, filters[0].evaluate());
       }
-    }
+    } // Now I will set the filter in the menu.
 
-    // Now I will set the filter in the menu.
+
     if (!this.hidefilter) {
       var filterMenuItems = this.menu.getChildById("filter-menu-items");
       filterMenuItems.element.parentNode.addEventListener("mouseover", function () {
         this.style.backgroundColor = "";
-      });
-
-      // hidden by default.
+      }); // hidden by default.
       // Here I will remove existing filer and expression and recreated it.
-      filterMenuItems.removeAllChilds();
-      for (var i = 0; i < filters.length; i++) {
 
+      filterMenuItems.removeAllChilds();
+
+      for (var i = 0; i < filters.length; i++) {
         // So here I will create the menu item asscoiated with each filter and given.
         var filter = filters[i];
 
@@ -758,7 +794,6 @@ class TableElement extends PolymerElement {
             "tag": "div",
             "style": "display: flex; justify-items: center; align-items: center;"
           }).down();
-
           this.deleteBtn = filterMenuDiv.appendElement({
             "tag": "paper-icon-button",
             "icon": "close",
@@ -788,14 +823,15 @@ class TableElement extends PolymerElement {
           }(filter, filterMenuItems, filterMenuDiv, this);
         }
       }
-    }
+    } // In that case I will call the onfilter event.
 
-    // In that case I will call the onfilter event.
+
     for (var i = 0; i < this.filters.length; i++) {
       if (this.filters[i].filter != null) {
         if (this.filters[i].onfilter != undefined) {
           // Call the render function with div and value as parameter.
           var values = this.filters[i].filter.getFilterdValues();
+
           if (isString(this.filters[i].onfilter)) {
             eval(this.filters[i].onfilter + "(values)");
           } else {
@@ -805,6 +841,7 @@ class TableElement extends PolymerElement {
       }
     }
   }
+
 }
 
 customElements.define('table-element', TableElement);
