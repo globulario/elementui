@@ -161,13 +161,10 @@ class TableElement extends PolymerElement {
           tiles[i].element.style.gridTemplateColumns = value;
         }
 
-       if (!menu.hidemenu) {
-          var coord = getCoords(table)
-          table.menu.element.style.left = coord.left - table.menu.element.offsetWidth - 2 + "px";
-          table.menu.element.style.top = coord.top + "px"
-          table.style.marginLeft = table.menu.offsetWidth + 4 + "px"
+        if(table.menu != undefined){
+          table.menu.element.style.left = -1 * (table.menu.element.offsetWidth + 2) + "px"
+          table.style.marginLeft = (table.menu.element.offsetWidth + 4) + "px"
         }
-
       };
     }(this.tiles, this.scrollDiv.element, this.children[0], this.menu, this);
 
@@ -363,94 +360,75 @@ class TableElement extends PolymerElement {
         "tag": "iron-icon",
         "icon": "menu"
       }) // Remove all sorting menu.
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "unorder-menu-item",
-          "style": "text-agling: left;",
-          "action": ""
-        }).down().appendElement({
-          "tag": "iron-icon",
-          "icon": "sort",
-          "style": "height: 18px; width: 18px"
-        }).appendElement({
-          "tag": "span",
-          "innerHtml": "remove all sorter",
-          "style": "margin-left: 10px;"
-        }).up() // Now filetering
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "filter-menu-item",
-          "style": "text-agling: left;"
-        }).down().appendElement({
-          "tag": "iron-icon",
-          "id": "filter-menu-item-icon",
-          "icon": "filter-list",
-          "style": "height: 18px; width: 18px"
-        }).appendElement({
-          "tag": "span",
-          "id": "filter-menu-item-span",
-          "innerHtml": "filtering",
-          "style": "margin-left: 10px;"
-        }) // Remove all filter
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "unfilter-menu-item",
-          "style": "text-agling: left;",
-          "action": ""
-        }).down().appendElement({
-          "tag": "span",
-          "innerHtml": "remove all filter",
-          "style": "margin-left: 10px;"
-        }).up().appendElement({
-          "tag": "menu-item-element",
-          "separator": "true",
-          "style": "text-agling: left;"
-        }).down().appendElement({
-          "tag": "div",
-          "id": "filter-menu-items",
-          "style": "text-agling: left; display: flex; flex-direction: column;"
-        }).up().up() // The export menu button.
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "export-menu-item",
-          "style": "text-agling: left;",
-          "action": this.onexport
-        }).down().appendElement({
-          "tag": "iron-icon",
-          "icon": "file-download",
-          "style": "height: 18px; width: 18px"
-        }).appendElement({
-          "tag": "span",
-          "innerHtml": "export",
-          "style": "margin-left: 10px;"
-        }); // Set the menu
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "unorder-menu-item",
+        "style": "text-agling: left;",
+        "action": ""
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "icon": "sort",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "innerHtml": "remove all sorter",
+        "style": "margin-left: 10px;"
+      }).up() // Now filetering
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "filter-menu-item",
+        "style": "text-agling: left;"
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "id": "filter-menu-item-icon",
+        "icon": "filter-list",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "id": "filter-menu-item-span",
+        "innerHtml": "filtering",
+        "style": "margin-left: 10px;"
+      }) // Remove all filter
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "unfilter-menu-item",
+        "style": "text-agling: left;",
+        "action": ""
+      }).down().appendElement({
+        "tag": "span",
+        "innerHtml": "remove all filter",
+        "style": "margin-left: 10px;"
+      }).up().appendElement({
+        "tag": "menu-item-element",
+        "separator": "true",
+        "style": "text-agling: left;"
+      }).down().appendElement({
+        "tag": "div",
+        "id": "filter-menu-items",
+        "style": "text-agling: left; display: flex; flex-direction: column;"
+      }).up().up() // The export menu button.
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "export-menu-item",
+        "style": "text-agling: left;",
+        "action": this.onexport
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "icon": "file-download",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "innerHtml": "export",
+        "style": "margin-left: 10px;"
+      }); // Set the menu
 
       // Append the element in the body so it will alway be visible.
-      this.menu.element.style.display = "none"
-      document.body.appendChild(this.menu.element)
-
-      var intersectionObserver = new IntersectionObserver(
-        function (table) {
-          return function(entries) {
-            if(entries[0].isIntersecting){
-              table.menu.element.style.display = ""
-              var coord = getCoords(table)
-              table.menu.element.style.left = coord.left - table.menu.element.offsetWidth - 2 + "px";
-              table.menu.element.style.top = coord.top + "px"
-              table.style.marginLeft = table.menu.element.offsetWidth + 4 + "px"
-              
-            }else{
-              table.menu.element.style.display = "none"
-            }
-          }
-        }(this)
-      )
-
-      intersectionObserver.observe(this);
-
-      // Postion the menu.
+      this.appendChild(this.menu.element);
+      
       this.menu.element.style.position = "absolute"; // In that case I will overide the menu action.
-
+      this.menu.element.style.left = -1 * (this.menu.element.offsetWidth + 2) + "px"
+      this.style.marginLeft = (this.menu.element.offsetWidth + 4) + "px"
+   
       if (this.onexport == undefined) {
         // export csv file by default.
         this.menu.getChildById("export-menu-item").element.action = function (table) {
@@ -458,12 +436,13 @@ class TableElement extends PolymerElement {
             // Here I will get the filtered data.
             if (Object.keys(table.filtered).length > 0) {
               exportToCsv("data.csv", Object.values(table.filtered));
-            }else{
-              exportToCsv("data.csv", table.data)
+            } else {
+              exportToCsv("data.csv", table.data);
             }
           };
         }(this);
       } // Remove the ordering
+      
 
 
       this.menu.getChildById("unorder-menu-item").element.action = function (table) {

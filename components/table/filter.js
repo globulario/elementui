@@ -127,35 +127,36 @@ class Expression {
       };
     }(this); // Set the focus to the element.
 
-    this.input.element.focus();
 
-    // append the enter event on the input.
+    this.input.element.focus(); // append the enter event on the input.
+
     this.input.element.addEventListener("keyup", function (evt) {
       function getFilterPanel(div, input) {
         if (div.parentNode != null) {
           if (div.className == "filter-panel") {
-            input.blur()
-            div.children[1].children[1].click()
+            input.blur();
+            div.children[1].children[1].click();
           } else {
-            getFilterPanel(div.parentNode, input)
+            getFilterPanel(div.parentNode, input);
           }
         }
       }
+
       if (evt.keyCode == 13) {
         // okBtn.element.click()
-        getFilterPanel(this, this)
+        getFilterPanel(this, this);
       }
-    })
+    });
 
     this.operatorSelector.element.onchange = function (valueDiv) {
       return function () {
         valueDiv.element.click();
       };
     }(this.valueDiv);
-  }
-
-  // send blur event to operator selector and 
+  } // send blur event to operator selector and 
   // Test if the expression is empty.
+
+
   isEmpty() {
     return this.input.element.value.length == 0;
   }
@@ -178,18 +179,19 @@ class Expression {
 
   delete() {
     this.panel.element.parentNode.removeChild(this.panel.element);
-  }
-  // must be implemented by all expression type.
-  evaluate() { }
+  } // must be implemented by all expression type.
+
+
+  evaluate() {}
 
   toString() {
     var str = this.selectorDiv.element.innerText + " " + this.operatorValueDiv.element.innerText;
     return str;
   }
 
-}
+} // Use to filter numberic value
 
-// Use to filter numberic value
+
 class NumericExpression extends Expression {
   constructor(parent) {
     super(parent); // Set the available operators.
@@ -239,11 +241,12 @@ class NumericExpression extends Expression {
     this.displayValueDiv.element.innerHTML = "0";
     this.displayValueDiv.element.style.minWidth = "60px";
   }
-
   /**
    * Evaluate the filter.
    * Return the list of rows that meet the expression.
    */
+
+
   evaluate() {
     // The rows that meet the expression.
     var rows = [];
@@ -350,9 +353,9 @@ class StringExpression extends Expression {
     this.input.element.style.maxWidth = "100px";
     this.displayValueDiv.element.style.minWidth = "100px";
     this.displayValueDiv.element.style.minHeight = "12px";
-
     var values = this.parent.getValues();
     var lst = [];
+
     for (var i = 0; i < values.length; i++) {
       if (lst.indexOf(values[i].value) == -1) {
         if (values[i].value != undefined) {
@@ -366,11 +369,11 @@ class StringExpression extends Expression {
     this.operatorSelector.element.addEventListener("change", function (expression, lst) {
       return function () {
         expression.valueDiv.element.style.display = ""; // hide the value div in that case.
+
         if (this.value == "not_empty" || this.value == "empty") {
           expression.valueDiv.element.style.display = "none";
         } else {
           /** to do remove the autocomplete. */
-
         }
 
         if (this.value == "not_equal" || this.value == "equal") {
@@ -386,20 +389,22 @@ class StringExpression extends Expression {
       };
     }(this, lst));
   }
-
   /**
    * Implement empty function.
    */
+
+
   isEmpty() {
     if (this.operatorSelector.element.value != "not_empty" && this.operatorSelector.element.value != "empty") {
-      return this.input.element.value == ""
+      return this.input.element.value == "";
     }
   }
-
   /**
    * Evaluate the filter.
    * Return the list of rows that meet the expression.
    */
+
+
   evaluate() {
     // The rows that meet the expression.
     var rows = [];
@@ -409,20 +414,21 @@ class StringExpression extends Expression {
 
     for (var i = 0; i < values.length; i++) {
       var value = values[i].value; // Now I will test the value contain in the operator div.
+
       if (value == undefined) {
-        value = "" // empty value in that case..
+        value = ""; // empty value in that case..
       }
 
       var valid = false;
 
       if (op == "contain" && v.length != 0) {
-        valid = value.indexOf(v) != -1;
+        valid = value.toUpperCase().indexOf(v.toUpperCase()) != -1;
       } else if (op == "equal") {
-        valid = value == v;
+        valid = value.toUpperCase() == v.toUpperCase();
       } else if (op == "startsWith" && v.length != 0) {
-        valid = value.startsWith(v);
+        valid = value.toUpperCase().startsWith(v.toUpperCase());
       } else if (op == "endsWith" && v.length != 0) {
-        valid = value.endsWith(v);
+        valid = value.toUpperCase().endsWith(v.toUpperCase());
       } else if (op == "empty") {
         valid = value.length == 0;
       }
@@ -430,11 +436,11 @@ class StringExpression extends Expression {
       if (op == "not_equal") {
         valid = !(value == v);
       } else if (op == "not_contain" && v.length != 0) {
-        valid = !(value.indexOf(v) != -1);
+        valid = !(value.toUpperCase().indexOf(v.toUpperCase()) != -1);
       } else if (op == "not_startsWith" && v.length != 0) {
-        valid = !value.startsWith(v);
+        valid = !value.toUpperCase().startsWith(v.toUpperCase());
       } else if (op == "not_endsWith" && v.length != 0) {
-        valid = !value.endsWith(v);
+        valid = !value.toUpperCase().endsWith(v.toUpperCase());
       } else if (op == "not_empty") {
         valid = value.length != 0;
       } else if (op == "match") {
@@ -1413,24 +1419,20 @@ class TableFilterElement extends PolymerElement {
         </div>
         `;
     super.ready();
-
     this.table = this.parentNode.parentNode.parentNode;
-    this.header = this.parentNode.parentNode;
+    this.header = this.parentNode.parentNode; // The parent cell.
 
-    // The parent cell.
     this.headerCell = this.parentNode;
     this.filterBtn = this.children[1].children[0];
     this.headerCell.style.position = "relative";
     this.headerCell.style.paddingRight = "25px";
     this.style.position = "absolute";
     this.style.right = "0px";
-
     this.parentNode.addEventListener("mouseover", function (filter) {
       return function () {
         filter.filterBtn.style.display = "block";
       };
     }(this));
-
     this.parentNode.addEventListener("mouseout", function (filter) {
       return function () {
         // test if some filter are applied...
@@ -1446,18 +1448,15 @@ class TableFilterElement extends PolymerElement {
         }
       };
     }(this));
-
     this.panel = createElement(document.createElement("div"));
-
     document.body.appendChild(this.panel.element);
     this.panel.element.className = "filter-panel";
     this.panel.element.style.minWidth = "160px";
     this.panel.element.style.display = "none";
     this.panel.element.style.left = "0px";
-    this.panel.element.style.zIndex = 100;
-
-    // So here I will create content of the filter.
+    this.panel.element.style.zIndex = 100; // So here I will create content of the filter.
     // Here I will hide the filter panel if the mouse get out of it.
+
     document.body.addEventListener("mousemove", function (filter, filterPanel) {
       return function (evt) {
         if (filterPanel.style.display != "none") {
@@ -1467,8 +1466,8 @@ class TableFilterElement extends PolymerElement {
 
           if (!isIn) {
             // hide it.
-            filterPanel.style.display = "none";
-            // Remove empty expressions.
+            filterPanel.style.display = "none"; // Remove empty expressions.
+
             for (var i = 0; i < filter.filter.expressions.length; i++) {
               if (filter.filter.expressions[i].isEmpty()) {
                 filter.filter.expressions[i].deleteBtn.element.click();
@@ -1478,7 +1477,6 @@ class TableFilterElement extends PolymerElement {
         }
       };
     }(this, this.panel.element));
-
     var filterDiv = this.panel.appendElement({
       "tag": "div",
       "style": "width: 100%; height: 100%; flex: 1; display: flex; flex-direction: column; border-bottom: 1px solid grey; "
@@ -1514,8 +1512,9 @@ class TableFilterElement extends PolymerElement {
         if (filter.filter.expressions.length == 0 && filter.filter.filters.length == 0) {
           filter.filterBtn.style.display = "none"; // Here I will keep a deep copy of the filter.
         } // Also apply change.
-
         // Remove empty expressions.
+
+
         for (var i = 0; i < filter.filter.expressions.length; i++) {
           if (filter.filter.expressions[i].isEmpty()) {
             filter.filter.expressions[i].deleteBtn.element.click();
@@ -1524,7 +1523,7 @@ class TableFilterElement extends PolymerElement {
 
         filter.table.filter(filter);
         filter.table.refresh();
-        fireResize()
+        fireResize();
       };
     }(this);
 
@@ -1541,14 +1540,15 @@ class TableFilterElement extends PolymerElement {
         // Set the top position.
         var elemRect = getCoords(filter.filterBtn);
         filter.panel.element.style.top = elemRect.top + filter.filterBtn.offsetHeight + 1 + "px"; // Set the left position.
+
         filter.panel.element.style.left = elemRect.left - 5 + "px";
         /** TODO be sure that the panel is inside the screen... */
       };
     }(this, this.parentNode.parentNode.parentNode));
-
     /**
      * Display the panel...
      */
+
     this.filterBtn.onclick = function (tableFilter) {
       return function () {
         if (tableFilter.panel.element.style.display == "none") {
@@ -1559,6 +1559,7 @@ class TableFilterElement extends PolymerElement {
             tableFilter.filter = new Filter(tableFilter, tableFilter.table, tableFilter.headerCell.index);
             tableFilter.filter.deleteFileterBtn.element.style.display = "none";
           }
+
           if (tableFilter.filter.expressions.length == 0) {
             // also create an expression panel
             tableFilter.filter.expressionsPanel.element.click();
