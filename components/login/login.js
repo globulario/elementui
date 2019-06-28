@@ -5,17 +5,26 @@ import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/paper-input/paper-input.js'
 
-// List of imported functionality.
-import { createElement } from "../element.js"
-import { randomUUID, parseFunction } from "../utility.js"
+import { createElement } from "../element.js";
+import { randomUUID, parseFunction } from "../utility.js";
 
 class LoginElement extends PolymerElement {
   constructor() {
     super();
+
+    this.loginBtn = null
+    this.loginPanel = null
+    this.loggedBtn = null
+    this.loggedPanel = null
+    this.userInput = null
+    this.pwdInput = null
+    this.displayName = null
+
   }
   /**
    * The internal component properties.
    */
+
 
   static get properties() {
     return {
@@ -27,7 +36,7 @@ class LoginElement extends PolymerElement {
       user_display_name: String,
       onlogin: Function,
       onlogout: Function,
-      login: Function,
+      login: Function
     };
   }
 
@@ -82,7 +91,6 @@ class LoginElement extends PolymerElement {
             </div>
     `;
   }
-
   /**
    * That function is call when the table is ready to be diplay.
    */
@@ -90,16 +98,16 @@ class LoginElement extends PolymerElement {
     // Here I will get grip on the shadow root element.
     super.ready(); // The login button.
 
-    var loginBtn = this.shadowRoot.getElementById("login-btn"); // Here I will set the text
+    this.loginBtn = this.shadowRoot.getElementById("login-btn"); // Here I will set the text
 
     if (this.login_btn_txt != undefined) {
       loginBtn.innerHTML = this.login_btn_txt;
     }
 
-    var loginPanel = createElement(this.shadowRoot.getElementById("login-panel"));
+    this.loginPanel = createElement(this.shadowRoot.getElementById("login-panel"));
+    this.loggedBtn = this.shadowRoot.getElementById("logged-btn"); // Here I will set the text
 
-    var loggedBtn = this.shadowRoot.getElementById("logged-btn"); // Here I will set the text
-    var loggedPanel = createElement(this.shadowRoot.getElementById("logged-panel"));
+    this.loggedPanel = createElement(this.shadowRoot.getElementById("logged-panel"));
 
     if (this.side == undefined) {
       this.side = "left";
@@ -108,122 +116,132 @@ class LoginElement extends PolymerElement {
     if (this.speed == undefined) {
       this.speed = 1000;
     } // display the login button.
-    
-    var userInput = this.shadowRoot.getElementById("user-id")
-    var pwdInput = this.shadowRoot.getElementById("pwd-id")
+
+
+    this.userInput = this.shadowRoot.getElementById("user-id");
+    this.pwdInput = this.shadowRoot.getElementById("pwd-id");
 
     if (this.login != undefined) {
-      this.login = parseFunction(this.login)
+      this.login = parseFunction(this.login);
     }
-    var displayName = this.shadowRoot.getElementById("display-user-name")
+
+    this.displayName = this.shadowRoot.getElementById("display-user-name");
 
     if (this.onlogin != undefined) {
       // this.onlogin = parseFunction(this.onlogin)
-      var onlogin = parseFunction(this.onlogin)
-      this.onlogin = function (onlogin, loginPanel, loginBtn, loggedBtn, displayName, loginElement) {
+      var onlogin = parseFunction(this.onlogin);
+      this.onlogin = function (loginElement, onlogin) {
         return function (param) {
-          loginPanel.element.style.display = "none"
-          loginBtn.style.display = "none"
-          loggedBtn.style.display = ""
-          displayName.innerHTML = loginElement.user_display_name
-          onlogin(param)
-        }
-      }(onlogin, loginPanel, loginBtn, loggedBtn, displayName, this)
-    }
+          loginElement.hide()
+          onlogin(param);
+        };
+      }(this, onlogin);
+    } // Logout to be call when the logout button is click.
 
-    // Logout to be call when the logout button is click.
+
     if (this.onlogout != undefined) {
-      var onlogout = parseFunction(this.onlogout)
-      this.onlogout = function(loginElement, loggedPanel, loginPanel, loginBtn, loggedBtn, displayName, onlogout){
-        return function(){
-          loginPanel.element.style.display = ""
-          loggedPanel.element.style.display = "none"
-          loginBtn.style.display = ""
-          loggedBtn.style.display = "none"
-          displayName.innerHTML = ""
-          loginElement.innerHTML = ""
-          onlogout()
-        }
-      }(this, loggedPanel, loginPanel, loginBtn, loggedBtn, displayName, onlogout)
+      var onlogout = parseFunction(this.onlogout);
+      this.onlogout = function (loginElement, onlogout) {
+        return function () {
+          loginElement.clear();
+          onlogout();
+        };
+      }(this, onlogout);
     }
 
-    pwdInput.onkeyup = function (loginElement, userInput) {
+    this.pwdInput.onkeyup = function (loginElement, userInput) {
       return function (evt) {
         if (evt.keyCode == 13) {
           // Call the function.
-          loginElement.login(loginElement, userInput.value, this.value)
+          loginElement.login(loginElement, userInput.value, this.value);
         }
-        if(this.value.lenght == 0){
+
+        if (this.value.lenght == 0) {
           this.setAttribute('invalid', false);
         }
-      }
-    }(this, userInput)
+      };
+    }(this, this.userInput);
 
-    loginBtn.onclick = function (loginElement, loginPanel, userInput, pwdInput, side) {
+    this.loginBtn.onclick = function (loginElement, side) {
       return function () {
-        loginPanel.element.style.top = this.offsetHeight + "px"
-        loginPanel.element.style[side] = "0px"
-        if (loginPanel.element.style.display == "none") {
-          loginPanel.element.style.display = "";
-          userInput.focus()
+        loginElement.loginPanel.element.style.top = this.offsetHeight + "px";
+        loginElement.loginPanel.element.style[side] = "0px";
+
+        if (loginElement.loginPanel.element.style.display == "none") {
+          loginElement.loginPanel.element.style.display = "";
+          loginElement.userInput.focus();
         } else {
-          loginPanel.element.style.display = "none";
-          if(userInput.value.length > 0 && pwdInput.value.length > 0){
-            loginElement.login(loginElement, userInput.value, pwdInput.value)
+          loginElement.loginPanel.element.style.display = "none";
+
+          if (loginElement.userInput.value.length > 0 && loginElement.pwdInput.value.length > 0) {
+            loginElement.login(loginElement, loginElement.userInput.value, loginElement.pwdInput.value);
           }
         }
-        
       };
-    }(this, loginPanel, userInput, pwdInput, this.side);
+    }(this, this.side);
 
-    loggedBtn.onclick = function (loggedPanel, side) {
+    this.loggedBtn.onclick = function (loggedPanel, side) {
       return function () {
-        loggedPanel.element.style.top = this.offsetHeight + "px"
-        loggedPanel.element.style[side] = "0px"
+        loggedPanel.element.style.top = this.offsetHeight + "px";
+        loggedPanel.element.style[side] = "0px";
+
         if (loggedPanel.element.style.display == "none") {
           loggedPanel.element.style.display = "";
         } else {
           loggedPanel.element.style.display = "none";
         }
       };
-    }(loggedPanel, this.side);
+    }(this.loggedPanel, this.side); // The logout event.
 
 
-    // The logout event.
     this.shadowRoot.getElementById("logout-btn").onclick = function (loginElement) {
       return function () {
         if (loginElement.onlogout != undefined) {
-          loginElement.onlogout()
+          loginElement.onlogout();
+
         }
-      }
-    }(this)
+        loginElement.clear();
+      };
+    }(this);
+  } // Set user login message error.
+
+  hide(){
+    this.loginPanel.element.style.display = "none";
+    this.loginPanel.element.style.display = "none";
+    this.loginBtn.style.display = "none";
+    this.loggedBtn.style.display = "";
+    this.displayName.innerHTML = this.user_display_name;
   }
 
-  // Set user login message error.
+  clear(){
+    this.loginPanel.element.style.display = "";
+    this.loggedPanel.element.style.display = "none";
+    this.loginBtn.style.display = "";
+    this.loggedBtn.style.display = "none";
+    this.displayName.innerHTML = "";
+  }
+
   setUserError(message) {
-    var userInput = this.shadowRoot.getElementById("user-id")
-    var pwdInput = this.shadowRoot.getElementById("pwd-id")
-    pwdInput.value = ""
-    userInput.inputElement.inputElement.select()
-    userInput.inputElement.inputElement.focus()
-    userInput.setAttribute('invalid', false);
-    userInput.setAttribute('invalid', true);
-    userInput.setAttribute('error-message', message)
-  }
+    this.pwdInput.value = "";
+    this.userInput.inputElement.inputElement.select();
+    this.userInput.inputElement.inputElement.focus();
+    this.userInput.setAttribute('invalid', false);
+    this.userInput.setAttribute('invalid', true);
+    this.userInput.setAttribute('error-message', message);
+  } // Set user login message error.
 
-  // Set user login message error.
   setPasswordError(message) {
-    var pwdInput = this.shadowRoot.getElementById("pwd-id")
-    pwdInput.setAttribute('invalid', false);
-    pwdInput.setAttribute('invalid', true);
-    pwdInput.setAttribute('error-message', message)
-    pwdInput.inputElement.inputElement.select()
-    setTimeout(function(pwdInput){
-      return function(){
-        pwdInput.value = ""
-        pwdInput.inputElement.inputElement.focus()
-      }
-    }(pwdInput), 1000)
+    var pwdInput = this.shadowRoot.getElementById("pwd-id");
+    this.pwdInput.setAttribute('invalid', false);
+    this.pwdInput.setAttribute('invalid', true);
+    this.pwdInput.setAttribute('error-message', message);
+    this.pwdInput.inputElement.inputElement.select();
+    setTimeout(function (pwdInput) {
+      return function () {
+        pwdInput.value = "";
+        pwdInput.inputElement.inputElement.focus();
+      };
+    }(this.pwdInput), 1000);
   }
 
 }
