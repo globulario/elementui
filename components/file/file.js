@@ -69,9 +69,9 @@ class ImagePanel {
         e.stopPropagation(); // delete a file.
 
         var confirmDialog = document.createElement("dialog-element");
-        confirmDialog.title = "Supprimer l'image";
+        confirmDialog.title = "Delete file";
         confirmDialog.ismodal = true;
-        confirmDialog.innerHTML = "<div style='height: 100%; width: 100%; padding: 15px;'>Voulez-vous supprimer " + imagePanel.fileInfo.Path + "?</div>"; // Remove the file from the panel.
+        confirmDialog.innerHTML = "<div style='height: 100%; width: 100%; padding: 15px;'>Do you want to delete file " + imagePanel.fileInfo.Path + "?</div>"; // Remove the file from the panel.
 
         confirmDialog.onok = function (imagePanel, filePaneElement) {
           return function () {
@@ -266,6 +266,10 @@ class FilePaneElement extends PolymerElement {
           // Closure to capture the file information.
           reader.onload = (function (info, filePaneElement) {
             return function (e) {
+              // append / at end if not given.
+              if(!filePaneElement.path.endsWith("/")){
+                filePaneElement.path += "/"
+              }
               var fileInfo = {
                 "Name": info.name,
                 "Size": info.size,
