@@ -3,9 +3,8 @@ import { PolymerElement, html } from '@polymer/polymer';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/iron-icons/iron-icons.js';
 
-// List of imported functionality.
-import { createElement } from "../element.js"
-import { randomUUID, fireResize, getCoords } from "../utility.js"
+import { createElement } from "../element.js";
+import { randomUUID, fireResize, getCoords } from "../utility.js";
 
 class TableSorterElement extends PolymerElement {
   constructor() {
@@ -27,11 +26,40 @@ class TableSorterElement extends PolymerElement {
     this.state = 0;
     this.order = 0;
     this.orderDiv = null;
+    this.ascSortBtn = null;
+    this.descSortBtn = null;
   }
   /**
    * The internal component properties.
    */
+  static get template() {
+    return html`
+      <style>
+          #div-selector {
+            display: flex; 
+            flex-direction: column;
+            font-size: 10pt; 
+            justify-items: center; 
+            align-items: center;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            color: white;
+            z-index: 100;
+        }
 
+        #div-selector:hover{
+          cursor: pointer;
+        }
+
+      </style>
+      <div id="div-selector" style="display: none;">
+            <iron-icon id="ascSortBtn" icon="expand-less" style="height: 18px;"></iron-icon>
+            <iron-icon id="descSortBtn" icon="expand-more" style="height: 18px;"></iron-icon>
+            <div id="order-div"></div>
+      </div>
+    `
+  }
 
   static get properties() {
     return {
@@ -41,217 +69,153 @@ class TableSorterElement extends PolymerElement {
       sort: Function
     };
   }
-
   /**
    * That function is call when the table is ready to be diplay.
    */
+
+
   ready() {
     super.ready(); // Here I will create the sorte selection div.
 
-    var div = document.createElement("div");
-    div.id = "div-selector";
-    div.style = `
-                      display: flex; 
-                      font-size: 10pt; 
-                      justify-items: center; 
-                      position: absolute;
-                      top: 0px;
-                      left: 0px;
-                      color: white;
-                      `;
-    div.innerHTML = `
-              <div style=""></div>
-              <div style="display: none; flex-direction: column;">
-                  <iron-icon id="ascSortBtn" icon="expand-less" style="height: 18px;"></iron-icon>
-                  <iron-icon "descSortBtn" icon="expand-more" style="height: 18px;"></iron-icon>
-              </div>
-  
-          <style>
-              body>#div-selector {
-                  -webkit-box-shadow: 0px 1px 12px -1px rgba(0,0,0,0.75);
-                  -moz-box-shadow: 0px 1px 12px -1px rgba(0,0,0,0.75);
-                  box-shadow: 0px 1px 12px -1px rgba(0,0,0,0.75);
-              }
-          </style>
-          `;
-    document.body.appendChild(div); // set various reference here.
+    var div = this.shadowRoot.getElementById("div-selector")
+    div.style.boxShadow ="0px 1px 12px -1px rgba(0,0,0,0.75)"
 
     this.table = this.parentNode.parentNode.parentNode;
     this.header = this.parentNode.parentNode;
     this.headerCell = this.parentNode;
-    this.orderDiv = div.children[0];
-    var ascSortBtn = div.children[1].children[0];
-    var descSortBtn = div.children[1].children[1];
+
+    this.orderDiv = this.shadowRoot.getElementById("order-div");
+    this.ascSortBtn = this.shadowRoot.getElementById("ascSortBtn");
+    this.descSortBtn =this.shadowRoot.getElementById("descSortBtn");
+
     this.headerCell.style.position = "relative";
     this.headerCell.style.paddingLeft = "35px"; // The component will be absolute.
-
-    this.style.position = "absolute";
-    this.style.left = "5px"; // Set the div style.
 
     var color = window.getComputedStyle(this.header, null).getPropertyValue('background-color');
     div.style.backgroundColor = color; // Set when clicked.
 
-    ascSortBtn.isSet = false;
-    descSortBtn.isSet = false; // Set the resize handler.
-
-    window.addEventListener("resize", function (sorter, div) {
-      return function () {
-        var elemRect = getCoords(sorter.parentNode);
-        var top = elemRect.top + 1;
-        div.style.top = top + "px";
-        div.style.left = elemRect.left + 1 + "px";
-      };
-    }(this, div)); // Display the table sorter.
+    this.ascSortBtn.isSet = false;
+    this.descSortBtn.isSet = false; // Set the resize handler.
 
     this.parentNode.addEventListener("mouseover", function (div, sorter) {
       return function (e) {
         e.stopPropagation();
-        if (div.children[1].style.display == "none") {
-          div.children[1].style.display = "flex";
+        if (sorter.orderDiv.innerHTML == "") {
+          div.style.display = "flex";
         }
       };
     }(div, this)); // Keep the div active.
 
-    div.onmouseover = function (sorter) {
-      return function () {
-        this.children[1].style.display = "flex";
-      };
-    }(this);
-
-    div.onmouseout = function (sorter) {
-      return function () {
-        if (this.parentNode == document.body) {
-          this.children[1].style.display = "none";
-        }
-
-        sorter.style.minWidth = "";
-      };
-    }(this);
-
-    this.parentNode.addEventListener("mouseout", function (div, ascSortBtn, descSortBtn, sorter) {
+    this.parentNode.addEventListener("mouseout", function (sorter, div) {
       return function (e) {
         e.stopPropagation();
-
-        if (div.children[1].style.display == "flex" && ascSortBtn.isSet == false && descSortBtn.isSet == false) {
-          div.children[1].style.display = "none";
-          sorter.style.minWidth = "";
+        if (sorter.orderDiv.innerHTML == "" && sorter.ascSortBtn.isSet == false && sorter.descSortBtn.isSet == false) {
+          div.style.display = "none";
         }
       };
-    }(div, ascSortBtn, descSortBtn, this)); // Now the button events.
+    }(this, div)); // Now the button events.
 
-    descSortBtn.onclick = function (sorter, div, ascSortBtn) {
+
+    this.descSortBtn.onclick = function (sorter, div) {
       return function () {
-        if (ascSortBtn.isSet == false && this.isSet == false) {
+        if (sorter.ascSortBtn.isSet == false && this.isSet == false) {
           // Start ordering.
           this.style.display = "";
-          ascSortBtn.style.display = "none";
+          sorter.ascSortBtn.style.display = "none";
           this.isSet = true;
           sorter.state = 2;
-        } else if (ascSortBtn.isSet == false && this.isSet == true) {
+          div.style.flexDirection = "row";
+          div.style.boxShadow =""
+        } else if (sorter.ascSortBtn.isSet == false && this.isSet == true) {
           this.style.display = "none";
-          ascSortBtn.style.display = "";
-          ascSortBtn.isSet = true;
+          sorter.ascSortBtn.style.display = "";
+          sorter.ascSortBtn.isSet = true;
           sorter.state = 1;
+          div.style.flexDirection = "row";
+          div.style.boxShadow =""
         } else {
           this.style.display = "";
-          ascSortBtn.style.display = "";
+          sorter.ascSortBtn.style.display = "";
           sorter.orderDiv.innerHTML = "";
           this.isSet = false;
-          ascSortBtn.isSet = false;
+          sorter.ascSortBtn.isSet = false;
           sorter.state = 0;
+          div.style.flexDirection = "column";
+          div.style.boxShadow ="0px 1px 12px -1px rgba(0,0,0,0.75)"
         } // In case the sorter is set it container must be the sorter.
-
-        div.parentNode.removeChild(div);
-
-        if (sorter.state == 0) {
-          div.style.position = "absolute";
-          document.body.appendChild(div);
-        } else {
-          div.style.position = "";
-          sorter.appendChild(div);
-        }
-
         sorter.setOrder();
       };
-    }(this, div, ascSortBtn);
+    }(this, div);
 
-    ascSortBtn.onclick = function (sorter, descSortBtn, div) {
+    this.ascSortBtn.onclick = function (sorter, div) {
       return function () {
-        if (descSortBtn.isSet == false && this.isSet == false) {
+        if (sorter.descSortBtn.isSet == false && this.isSet == false) {
           // Start ordering.
           this.style.display = "";
-          descSortBtn.style.display = "none";
+          sorter.descSortBtn.style.display = "none";
           this.isSet = true;
           sorter.state = 1;
-        } else if (descSortBtn.isSet == false && this.isSet == true) {
+          div.style.flexDirection = "row";
+          div.style.boxShadow =""
+        } else if (sorter.descSortBtn.isSet == false && this.isSet == true) {
           this.style.display = "none";
-          descSortBtn.style.display = "";
-          descSortBtn.isSet = true;
+          sorter.descSortBtn.style.display = "";
+          sorter.descSortBtn.isSet = true;
           sorter.state = 2;
+          div.style.flexDirection = "row";
+          div.style.boxShadow =""
         } else {
           this.style.display = "";
-          descSortBtn.style.display = "";
+          sorter.descSortBtn.style.display = "";
           sorter.orderDiv.innerHTML = "";
           this.isSet = false;
-          descSortBtn.isSet = false;
+          sorter.descSortBtn.isSet = false;
           sorter.state = 0;
+          div.style.flexDirection = "column";
+          div.style.boxShadow ="0px 1px 12px -1px rgba(0,0,0,0.75)"
         } // In case the sorter is set it container must be the sorter.
-
-
-        div.parentNode.removeChild(div);
-
-        if (sorter.state == 0) {
-          div.style.position = "absolute";
-          document.body.appendChild(div);
-        } else {
-          div.style.position = "";
-          sorter.appendChild(div);
-        }
-
         sorter.setOrder();
       };
-    }(this, descSortBtn, div); // The onmouse over event...
+    }(this, div); // The onmouse over event...
 
-
-    descSortBtn.onmouseover = ascSortBtn.onmouseover = function () {
+    this.descSortBtn.onmouseover = this.ascSortBtn.onmouseover = function () {
       this.style.cursor = "pointer";
     };
 
-    descSortBtn.onmouseout = ascSortBtn.onmouseout = function () {
+    this.descSortBtn.onmouseout = this.ascSortBtn.onmouseout = function () {
       this.style.cursor = "default";
     }; // Now the onclick event.
 
 
-    descSortBtn.onmouseover = ascSortBtn.onmouseover = function () {
+    this.descSortBtn.onmouseover = this.ascSortBtn.onmouseover = function () {
       this.style.cursor = "pointer";
     };
 
-    descSortBtn.onmouseout = ascSortBtn.onmouseout = function () {
+    this.descSortBtn.onmouseout = this.ascSortBtn.onmouseout = function () {
       this.style.cursor = "default";
     }; // Funtion to remove the order programatically.
 
-
-    this.unset = function (descSortBtn, ascSortBtn, sorter, div) {
+    this.unset = function (sorter, div) {
       return function () {
-        div.children[1].style.display = "none";
-        ascSortBtn.style.display = "";
-        descSortBtn.style.display = "";
-        ascSortBtn.isSet = false;
-        descSortBtn.isSet = false;
+        // not display the order.
+        sorter.orderDiv.innerHTML = ""
+        div.style.flexDirection = "column";
+        div.style.boxShadow ="0px 1px 12px -1px rgba(0,0,0,0.75)"
+        div.style.display ="none"
+        sorter.ascSortBtn.style.display = "";
+        sorter.descSortBtn.style.display = "";
+        sorter.ascSortBtn.isSet = false;
+        sorter.descSortBtn.isSet = false;
         sorter.state = 0;
-        div.parentNode.removeChild(div);
-        div.style.position = "absolute";
-        document.body.appendChild(div);
         sorter.setOrder();
       };
-    }(descSortBtn, ascSortBtn, this, div);
+    }(this, div);
   }
+
   /**
   * Sort values.
   * @params values The values to sort.
   */
-
-
   sortValues(values) {
     // Sort each array...
     values.sort(function (sorter) {
@@ -352,7 +316,6 @@ class TableSorterElement extends PolymerElement {
       this.order = 0;
       this.orderDiv.innerHTML = "";
       var index = 1;
-
       for (var i = 1; i < activeSorter.length; i++) {
         if (activeSorter[i] != undefined) {
           activeSorter[i].order = index;
@@ -362,9 +325,10 @@ class TableSorterElement extends PolymerElement {
       }
     } // Apply filter sorter and refresh.
 
+
     this.table.sort();
     this.table.refresh();
-    fireResize()
+    fireResize();
   }
 
 }

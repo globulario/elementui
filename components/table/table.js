@@ -157,15 +157,15 @@ class TableElement extends PolymerElement {
           table.width = totalWidth;
         } // set tiles columns width.
 
+
         for (var i = 0; i < tiles.length; i++) {
           tiles[i].element.style.gridTemplateColumns = value;
         }
 
         if (table.menu != undefined) {
-          table.style.marginLeft = (table.menu.element.offsetWidth + 4) + "px"
-          table.menu.element.style.left = -1 * (table.menu.element.offsetWidth + 2) + "px"
+          table.style.marginLeft = table.menu.element.offsetWidth + 4 + "px";
+          table.menu.element.style.left = -1 * (table.menu.element.offsetWidth + 2) + "px";
         }
-
       };
     }(this.tiles, this.scrollDiv.element, this.children[0], this.menu, this);
 
@@ -203,11 +203,14 @@ class TableElement extends PolymerElement {
     }
   }
 
+  getScrollWidth(){
+    var scrollBarWidth = this.scrollDiv.element.offsetWidth - this.scrollDiv.element.clientWidth;
+    return scrollBarWidth
+  }
+
   /**
    * return the current row index.
    */
-
-
   getIndex() {
     var index = 0;
 
@@ -362,80 +365,79 @@ class TableElement extends PolymerElement {
         "tag": "iron-icon",
         "icon": "menu"
       }) // Remove all sorting menu.
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "unorder-menu-item",
-          "style": "text-agling: left;",
-          "action": ""
-        }).down().appendElement({
-          "tag": "iron-icon",
-          "icon": "sort",
-          "style": "height: 18px; width: 18px"
-        }).appendElement({
-          "tag": "span",
-          "innerHtml": "remove all sorter",
-          "style": "margin-left: 10px;"
-        }).up() // Now filetering
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "filter-menu-item",
-          "style": "text-agling: left;"
-        }).down().appendElement({
-          "tag": "iron-icon",
-          "id": "filter-menu-item-icon",
-          "icon": "filter-list",
-          "style": "height: 18px; width: 18px"
-        }).appendElement({
-          "tag": "span",
-          "id": "filter-menu-item-span",
-          "innerHtml": "filtering",
-          "style": "margin-left: 10px;"
-        }) // Remove all filter
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "unfilter-menu-item",
-          "style": "text-agling: left;",
-          "action": ""
-        }).down().appendElement({
-          "tag": "span",
-          "innerHtml": "remove all filter",
-          "style": "margin-left: 10px;"
-        }).up().appendElement({
-          "tag": "menu-item-element",
-          "separator": "true",
-          "style": "text-agling: left;"
-        }).down().appendElement({
-          "tag": "div",
-          "id": "filter-menu-items",
-          "style": "text-agling: left; display: flex; flex-direction: column;"
-        }).up().up() // The export menu button.
-        .appendElement({
-          "tag": "menu-item-element",
-          "id": "export-menu-item",
-          "style": "text-agling: left;",
-          "action": this.onexport
-        }).down().appendElement({
-          "tag": "iron-icon",
-          "icon": "file-download",
-          "style": "height: 18px; width: 18px"
-        }).appendElement({
-          "tag": "span",
-          "innerHtml": "export",
-          "style": "margin-left: 10px;"
-        }); // Set the menu
-
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "unorder-menu-item",
+        "style": "text-agling: left;",
+        "action": ""
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "icon": "sort",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "innerHtml": "remove all sorter",
+        "style": "margin-left: 10px;"
+      }).up() // Now filetering
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "filter-menu-item",
+        "style": "text-agling: left;"
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "id": "filter-menu-item-icon",
+        "icon": "filter-list",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "id": "filter-menu-item-span",
+        "innerHtml": "filtering",
+        "style": "margin-left: 10px;"
+      }) // Remove all filter
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "unfilter-menu-item",
+        "style": "text-agling: left;",
+        "action": ""
+      }).down().appendElement({
+        "tag": "span",
+        "innerHtml": "remove all filter",
+        "style": "margin-left: 10px;"
+      }).up().appendElement({
+        "tag": "menu-item-element",
+        "separator": "true",
+        "style": "text-agling: left;"
+      }).down().appendElement({
+        "tag": "div",
+        "id": "filter-menu-items",
+        "style": "text-agling: left; display: flex; flex-direction: column;"
+      }).up().up() // The export menu button.
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "export-menu-item",
+        "style": "text-agling: left;",
+        "action": this.onexport
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "icon": "file-download",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "innerHtml": "export",
+        "style": "margin-left: 10px;"
+      }); // Set the menu
       // Append the element in the body so it will alway be visible.
+
       this.appendChild(this.menu.element);
-
       this.menu.element.style.position = "absolute"; // In that case I will overide the menu action.
-      this.style.marginLeft = (this.menu.element.offsetWidth + 4) + "px"
-      this.menu.element.style.left = -1 * (this.menu.element.offsetWidth + 2) + "px"
 
-      // Make the table resize when it display.
+      this.style.marginLeft = this.menu.element.offsetWidth + 4 + "px";
+      this.menu.element.style.left = -1 * (this.menu.element.offsetWidth + 2) + "px"; // Make the table resize when it display.
+
       var intersectionObserver = new IntersectionObserver(function (entries) {
         if (entries[0].isIntersecting) {
           //entries[0].target.refresh()
-          fireResize()
+          fireResize();
         }
       }); // Set the observer on the menu itself.
 
@@ -455,6 +457,7 @@ class TableElement extends PolymerElement {
         }(this);
       } // Remove the ordering
 
+
       this.menu.getChildById("unorder-menu-item").element.action = function (table) {
         return function () {
           for (var i = 0; i < table.sorters.length; i++) {
@@ -469,6 +472,7 @@ class TableElement extends PolymerElement {
           table.refresh(); // refresh the result.
         };
       }(this); // Renove the filtering
+
 
       this.menu.getChildById("unfilter-menu-item").element.action = function (table) {
         return function () {

@@ -1,6 +1,6 @@
 // List of imported functionality.
-import { createElement } from "../element.js"
-import { isString, getCoords, getMouseX, getMouseY } from "../utility.js"
+import { createElement } from "../element.js";
+import { isString, getCoords, getMouseX, getMouseY } from "../utility.js";
 var server = undefined;
 /*
  * This class is use to insert auto-completion functionnality
@@ -91,7 +91,7 @@ export function attachAutoComplete(control, elementLst, autoComplete, selectCall
           document.getElementsByTagName('head')[0].appendChild(style);
           var div = document.createElement("div");
           div.className = "autoCompleteDiv";
-          div.style.zIndex = 101;
+          div.style.zIndex = 1001;
           div.id = "autocompleteDiv";
           document.getElementsByTagName("body")[0].appendChild(div);
           autocompleteDiv = createElement(div);

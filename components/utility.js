@@ -211,28 +211,26 @@ export function isFunction(functionToCheck) {
   var getType = {};
   return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 }
-
 export function parseFunction(code) {
   // The function parameters
-  var parameters = code.substring(code.indexOf("(") + 1, code.indexOf("{"))
-  parameters = parameters.substring(0, parameters.indexOf(")"))
-  parameters = parameters.split(",")
+  var parameters = code.substring(code.indexOf("(") + 1, code.indexOf("{"));
+  parameters = parameters.substring(0, parameters.indexOf(")"));
+  parameters = parameters.split(","); // The function src
 
-  // The function src
-  var src = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"))
+  var src = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
+  var constructor = "Function(";
 
-  var constructor = "Function("
   for (var i = 0; i < parameters.length; i++) {
-    constructor += '"' + parameters[i] + '"'
+    constructor += '"' + parameters[i] + '"';
+
     if (i < parameters.length - 1) {
-      constructor += ","
+      constructor += ",";
     }
   }
-  constructor += ", src)"
 
-  return  eval(constructor)
+  constructor += ", src)";
+  return eval(constructor);
 }
-
 export function objectEquals(x, y) {
   'use strict';
 
@@ -925,7 +923,10 @@ var Base64 = {
   _utf8_decode: function (utftext) {
     var string = "";
     var i = 0;
-    var c = c1 = c2 = 0;
+    var c
+    var c1
+    var c2
+    c = c1 = c2 = 0;
 
     while (i < utftext.length) {
       c = utftext.charCodeAt(i);

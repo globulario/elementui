@@ -3,14 +3,13 @@ import { PolymerElement, html } from '@polymer/polymer';
 import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 
-// List of imported functionality.
-import { createElement } from "../element"
-import { randomUUID } from "../utility"
-import { setResizeable } from "../rezieable"
-
+import { createElement } from "../element.js";
+import { randomUUID } from "../utility.js";
+import { setResizeable } from "../rezieable.js";
 /*
  * Menu item represent element contain inside a menu.
  */
+
 export class DialogElement extends PolymerElement {
   // Constructor.
   constructor() {
@@ -22,7 +21,6 @@ export class DialogElement extends PolymerElement {
     this.okBtn = null;
     this.closeBtn = null;
     this.buttonsDiv = null;
-
     /* Property used to move the dialog **/
 
     this.isMoving = false;
@@ -174,11 +172,11 @@ export class DialogElement extends PolymerElement {
       this.parent = this.modalDiv;
     } // The dialog div.
 
-    this.div = this.shadowRoot.getElementById("dialog_div");
 
-    // Set it reziable.
+    this.div = this.shadowRoot.getElementById("dialog_div"); // Set it reziable.
+
     if (this.isresizeable) {
-      setResizeable(this.div)
+      setResizeable(this.div);
     }
 
     this.parent.appendChild(this); // Now I will set the dialog properties.
@@ -189,10 +187,8 @@ export class DialogElement extends PolymerElement {
     this.cancelBtn = this.shadowRoot.getElementById("cancel_btn"); // Set the title
 
     this.titleDiv = this.shadowRoot.getElementById("title");
-    this.titleDiv.innerHTML = this.title;
+    this.titleDiv.innerHTML = this.title; //////////////////////// Move function ///////////////////////////
 
-
-    //////////////////////// Move function ///////////////////////////
     if (this.ismoveable) {
       this.titleDiv.parentNode.onmousedown = function (dialog) {
         return function (evt) {
@@ -224,6 +220,7 @@ export class DialogElement extends PolymerElement {
             var docEl = document.documentElement;
             var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
             var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft; // Here i will calculate the new position of the dialogue...
+
             var x = evt.pageX;
             var y = evt.pageY; // Now the new postion of the dialog...
 
@@ -236,9 +233,9 @@ export class DialogElement extends PolymerElement {
       }(this);
 
       document.body.addEventListener("mousemove", this.mouseMoveListener);
-    }
+    } // Close handler function.
 
-    // Close handler function.
+
     var closeHandler = function (dialog) {
       return function (evt) {
         evt.stopPropagation();
@@ -261,9 +258,9 @@ export class DialogElement extends PolymerElement {
         dialog.div.parentNode.removeChild(dialog.div);
       };
     }(this);
-
-
     /* The button action **/
+
+
     this.cancelBtn.onclick = closeHandler;
     this.closeBtn.onclick = closeHandler;
 
@@ -279,22 +276,24 @@ export class DialogElement extends PolymerElement {
 
     this.setCentered();
   }
-
   /**
    * Close the dialog
    */
+
+
   close() {
-    this.removeChild(this.div);
-    this.parent.element.removeEventListener("mousemove", this.mouseMoveListener);
+    this.div.parentNode.removeChild(this.div);
+    this.parentNode.removeEventListener("mousemove", this.mouseMoveListener);
 
     if (this.ismodal) {
       this.modalDiv.parentNode.removeChild(this.modalDiv);
     }
   }
-
   /**
    * Center the dialog with it parent.
    */
+
+
   setCentered() {
     var docEl = document.documentElement;
     var body = document.body;
@@ -305,64 +304,69 @@ export class DialogElement extends PolymerElement {
     this.y = (window.innerHeight - this.div.offsetHeight) / 2;
     this.div.style.top = this.y + "px";
   }
-
   /**
    * Set the dialog position in the screen
    * @param {*} x The horizontal postion
    * @param {*} y The vertical position
    */
+
+
   setPosition(x, y) {
     /* I will set the position of the dialog **/
     this.x = x;
     this.div.style.left = this.x + "px";
     this.y = y;
     this.div.style.top = this.y + "px";
-  }
+  } //////////////// Getter //////////////////
 
-  //////////////// Getter //////////////////
   /**
    * return the div of the dialog.
    */
-  getDiv() {
-    return this.div
-  }
 
+
+  getDiv() {
+    return this.div;
+  }
   /**
    * Return a reference to the ok button
    */
-  getOkBtn() {
-    return this.okBtn
-  }
 
+
+  getOkBtn() {
+    return this.okBtn;
+  }
   /**
    * Return a reference to the cancel button
    */
-  getCancelBtn() {
-    return this.cancelBtn
-  }
 
+
+  getCancelBtn() {
+    return this.cancelBtn;
+  }
   /**
    * Return a reference to the buttons div.
    */
-  getButtonsDiv(){
-    return this.buttonsDiv
-  }
 
+
+  getButtonsDiv() {
+    return this.buttonsDiv;
+  }
   /**
    * Return a reference to the close button
    */
-  getCloseBtn() {
-    return this.closeBtn
-  }
 
+
+  getCloseBtn() {
+    return this.closeBtn;
+  }
   /**
    * Return a reference to the titlte div
    */
-  getTitleDiv() {
-    return this.titleDiv
-  }
 
-  ///////////////////////////// method /////////////////////////////////
+
+  getTitleDiv() {
+    return this.titleDiv;
+  } ///////////////////////////// method /////////////////////////////////
 
   /**
    * Append a new button with a given text and return a reference to 
@@ -371,20 +375,26 @@ export class DialogElement extends PolymerElement {
    * @param {*} index The position relative to other btn
    * @param {*} icon The icon as need
    */
-  appendButton(text, index, icon){
-    var btn 
-    if(icon != undefined){
-      btn = document.createElement("paper-icon-button")
-      btn.icon = icon
-    }else{
-      btn = document.createElement("paper-button")
+
+
+  appendButton(text, index, icon) {
+    var btn;
+
+    if (icon != undefined) {
+      btn = document.createElement("paper-icon-button");
+      btn.icon = icon;
+    } else {
+      btn = document.createElement("paper-button");
     }
-    btn.innerHTML = text
-    if(index != undefined){
+
+    btn.innerHTML = text;
+
+    if (index != undefined) {
       this.buttonsDiv.insertBefore(btn, this.buttonsDiv.children[index]);
-    }else{
-      this.buttonsDiv.appendChild(btn)
+    } else {
+      this.buttonsDiv.appendChild(btn);
     }
+
     return btn;
   }
 

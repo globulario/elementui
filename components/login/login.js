@@ -11,15 +11,13 @@ import { randomUUID, parseFunction } from "../utility.js";
 class LoginElement extends PolymerElement {
   constructor() {
     super();
-
-    this.loginBtn = null
-    this.loginPanel = null
-    this.loggedBtn = null
-    this.loggedPanel = null
-    this.userInput = null
-    this.pwdInput = null
-    this.displayName = null
-
+    this.loginBtn = null;
+    this.loginPanel = null;
+    this.loggedBtn = null;
+    this.loggedPanel = null;
+    this.userInput = null;
+    this.pwdInput = null;
+    this.displayName = null;
   }
   /**
    * The internal component properties.
@@ -94,6 +92,8 @@ class LoginElement extends PolymerElement {
   /**
    * That function is call when the table is ready to be diplay.
    */
+
+
   ready() {
     // Here I will get grip on the shadow root element.
     super.ready(); // The login button.
@@ -130,9 +130,10 @@ class LoginElement extends PolymerElement {
     if (this.onlogin != undefined) {
       // this.onlogin = parseFunction(this.onlogin)
       var onlogin = parseFunction(this.onlogin);
+
       this.onlogin = function (loginElement, onlogin) {
         return function (param) {
-          loginElement.hide()
+          loginElement.hide();
           onlogin(param);
         };
       }(this, onlogin);
@@ -141,6 +142,7 @@ class LoginElement extends PolymerElement {
 
     if (this.onlogout != undefined) {
       var onlogout = parseFunction(this.onlogout);
+
       this.onlogout = function (loginElement, onlogout) {
         return function () {
           loginElement.clear();
@@ -198,14 +200,15 @@ class LoginElement extends PolymerElement {
       return function () {
         if (loginElement.onlogout != undefined) {
           loginElement.onlogout();
-
         }
+
         loginElement.clear();
       };
     }(this);
   } // Set user login message error.
 
-  hide(){
+
+  hide() {
     this.loginPanel.element.style.display = "none";
     this.loginPanel.element.style.display = "none";
     this.loginBtn.style.display = "none";
@@ -213,7 +216,7 @@ class LoginElement extends PolymerElement {
     this.displayName.innerHTML = this.user_display_name;
   }
 
-  clear(){
+  clear() {
     this.loginPanel.element.style.display = "";
     this.loggedPanel.element.style.display = "none";
     this.loginBtn.style.display = "";
@@ -229,6 +232,7 @@ class LoginElement extends PolymerElement {
     this.userInput.setAttribute('invalid', true);
     this.userInput.setAttribute('error-message', message);
   } // Set user login message error.
+
 
   setPasswordError(message) {
     var pwdInput = this.shadowRoot.getElementById("pwd-id");
