@@ -526,7 +526,7 @@ class DateFieldSelector {
   constructor(parent) {
     this.panel = parent.appendElement({
       "tag": "div",
-      "style": "display: flex; flex-direction: column; overflow: hidden;"
+      "style": "display: flex; flex-direction: column; overflow: hidden; min-width: 200px;"
     }).down();
     var div0 = this.panel.appendElement({
       "tag": "div",
@@ -629,7 +629,7 @@ class DateFieldSelector {
 
     var div2 = div1.appendElement({
       "tag": "div",
-      "style": "display: flex; flex-direction: column; padding-right: 4px"
+      "style": "display: flex; flex-direction: column;  text-align: start; padding-right: 4px"
     }).down();
     this.yearSelector = div2.appendElement({
       "tag": "div"
@@ -666,7 +666,7 @@ class DateFieldSelector {
     });
     var div3 = div1.appendElement({
       "tag": "div",
-      "style": "display: flex; flex-direction: column;"
+      "style": "display: flex; flex-direction: column; text-align: start;"
     }).down();
     this.hourSelector = div3.appendElement({
       "tag": "div"
@@ -714,33 +714,35 @@ class DateFieldSelector {
     }; // Now The expand btn...
 
 
-    this.expandBtn.element.onclick = function (shrinkBtn, expandBtn, div) {
-      return function () {
+    this.expandBtn.element.onclick = () => {
         // Little animation here...
-        var keyframe = "100% {height:80px;}";
+        /*var keyframe = "100% {height:80px;}";
         div.animate(keyframe, .5, function (shrinkdivBtn, expandBtn, div) {
           return function () {
             div.element.style.height = "80px";
             shrinkdivBtn.element.style.display = "block";
             expandBtn.element.style.display = "none";
           };
-        }(shrinkBtn, expandBtn, div));
+        }(shrinkBtn, expandBtn, div));*/
+        div1.element.style.height = "80px";
+        this.shrinkBtn.element.style.display = "block";
+        this.expandBtn.element.style.display = "none";
       };
-    }(this.shrinkBtn, this.expandBtn, div1);
 
-    this.shrinkBtn.element.onclick = function (expandBtn, shrinkBtn, div) {
-      return function () {
+    this.shrinkBtn.element.onclick = () => {
         // Little animation here...
-        var keyframe = "100% {height:0px;}";
+        /*var keyframe = "100% {height:0px;}";
         div.animate(keyframe, .5, function (expandBtn, shrinkBtn, div) {
           return function () {
             div.element.style.height = "0px";
             expandBtn.element.style.display = "block";
             shrinkBtn.element.style.display = "none";
           };
-        }(expandBtn, shrinkBtn, div));
+        }(expandBtn, shrinkBtn, div));*/
+        div1.element.style.height = "0px";
+        this.expandBtn.element.style.display = "block";
+        this.shrinkBtn.element.style.display = "none";
       };
-    }(this.expandBtn, this.shrinkBtn, div1);
 
     this.selectionDiv.element.onclick = function (dateFieldSelector) {
       return function (evt) {
