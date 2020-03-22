@@ -68,10 +68,11 @@ class TableElement extends PolymerElement {
       // Tha array of data to display.
       data: Array,
       rowheight: Number,
-      resizeable: Boolean,
       order: String,
       refresh: Function,
       onexport: Function,
+      ondeleteall: Function,
+      ondeletefiltered: Function,
       hidemenu: Boolean,
       width: String
     };
@@ -107,9 +108,22 @@ class TableElement extends PolymerElement {
       this.tiles[i] = this.scrollDiv.appendElement({
         "tag": "div",
         "class": "table-tile",
-        "style": "grid-gap: 0px; display: grid; grid-template-columns: repeat(" + this.children[0].children.length + ", auto)"
+        "style": "grid-gap: 0px; display: grid;"
       }).down(); // Set the number of rows for the tiles.
 
+      // The header with drive the body cell width.
+      var gridTemplateColumns = "";
+      for(var j=0; j < this.header.getSize(); j++){
+        var headerCell = this.header.getHeaderCell(j)
+        gridTemplateColumns += headerCell.offsetWidth + "px"
+        if(j < this.header.getSize() - 1){
+          gridTemplateColumns += " ";
+        }
+      }
+
+      this.tiles[i].element.style.gridTemplateColumns = gridTemplateColumns;
+
+      // The table column height
       if (i < size - 1 || this.size() % maxRowNumber == 0) {
         this.tiles[i].element.style.gridTemplateRows = "repeat( " + maxRowNumber + ", " + this.rowheight + "px)";
       } else {
@@ -117,7 +131,7 @@ class TableElement extends PolymerElement {
       }
     }
 
-    var resizeListener = function (tiles, scrollDiv, header, menu, table) {
+    var resizeListener = function (tiles, scrollDiv, header, table) {
       return function (entry) {
         var value = ""; // Set the last header cell margin larger to move out the scroll bar 
         // out of the way of the last table column.
@@ -148,10 +162,10 @@ class TableElement extends PolymerElement {
 
         if (totalWidth == 0) {
           return;
-        } // set tiles columns width.
+        }
+        
+        // set tiles columns width.
         // Set the table width
-
-
         if (table.width == undefined) {
           table.style.width = totalWidth + "px";
           table.width = totalWidth;
@@ -167,7 +181,7 @@ class TableElement extends PolymerElement {
           table.menu.element.style.left = -1 * (table.menu.element.offsetWidth + 2) + "px";
         }
       };
-    }(this.tiles, this.scrollDiv.element, this.children[0], this.menu, this);
+    }(this.tiles, this.scrollDiv.element, this.children[0], this);
 
     window.addEventListener("resize", resizeListener, true);
   } // create the cells once and use it mutitple time.
@@ -177,15 +191,14 @@ class TableElement extends PolymerElement {
     if (this.data.length == 0) {
       return;
     }
+    this.cells = []
 
     var max = Math.ceil(this.clientHeight / this.rowheight);
-
     if (max == 0 && this.style.maxHeight != undefined) {
       max = Math.ceil(parseInt(this.style.maxHeight.replace("px", "")) / this.rowheight);
     }
 
     var rowsLength = this.data[0].length;
-
     for (var i = 0; i < max; i++) {
       for (var j = 0; j < rowsLength; j++) {
         var cell = document.createElement("div");
@@ -197,7 +210,6 @@ class TableElement extends PolymerElement {
         cellContent.style.display = "table-cell";
         cellContent.style.overflow = "hidden";
         cell.appendChild(cellContent); // keep the cell as element in the buffer.
-
         this.cells.push(createElement(cell));
       }
     }
@@ -358,6 +370,7 @@ class TableElement extends PolymerElement {
       this.menu = createElement(null, {
         "tag": "dropdown-menu-element"
       });
+      
       this.menu.appendElement({
         "tag": "menu-item-element",
         "id": "item-0"
@@ -412,6 +425,49 @@ class TableElement extends PolymerElement {
         "id": "filter-menu-items",
         "style": "text-agling: left; display: flex; flex-direction: column;"
       }).up().up() // The export menu button.
+      .appendElement({
+        "tag": "menu-item-element",
+        "separator": "true",
+        "style": "text-agling: left;"
+      }) // Delete filetered values
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "delete-filtere-menu-item",
+        "style": "text-agling: left;",
+        "action": this.ondeletefiltered
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "icon": "delete",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "innerHtml": "delete filtered",
+        "style": "margin-left: 10px;"
+      }).up()
+      .appendElement({
+        "tag": "menu-item-element",
+        "separator": "true",
+        "style": "text-agling: left;"
+      }) // Delete filetered values
+      .appendElement({
+        "tag": "menu-item-element",
+        "id": "delete-all-data-menu-item",
+        "style": "text-agling: left;",
+        "action": this.ondeleteall
+      }).down().appendElement({
+        "tag": "iron-icon",
+        "icon": "delete",
+        "style": "height: 18px; width: 18px"
+      }).appendElement({
+        "tag": "span",
+        "innerHtml": "delete all data",
+        "style": "margin-left: 10px;"
+      }).up()
+      .appendElement({
+        "tag": "menu-item-element",
+        "separator": "true",
+        "style": "text-agling: left;"
+      }) // Export csv file
       .appendElement({
         "tag": "menu-item-element",
         "id": "export-menu-item",
@@ -491,6 +547,8 @@ class TableElement extends PolymerElement {
       }(this);
     } // Fix the style of the element.
 
+    this.menu.getChildById("delete-filtere-menu-item").element.style.display = "none"
+    this.menu.getChildById("delete-all-data-menu-item").element.style.display = "none"
 
     this.style.display = "flex";
     this.style.flexDirection = "column"; // Create the body of table after the header...

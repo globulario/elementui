@@ -45,7 +45,24 @@ class TableHeaderElement extends PolymerElement {
         // The header...
         this.style.display = "grid";
         this.gridGap = "0px";
-        this.style.gridTemplateColumns = "repeat(" + this.children.length + ", auto)"
+
+
+        // The header will always drive the show...
+        var gridTemplateColumns = "";
+        for(var i=0; i < this.children.length; i++){
+            if(this.children[i].width < 0){
+                gridTemplateColumns += "auto"
+            }else{
+                gridTemplateColumns += this.children[i].width + "px"
+            }
+            if(i < this.children.length - 1){
+                gridTemplateColumns += " ";
+            }
+        }
+
+        // Set the header...
+        this.style.gridTemplateColumns = gridTemplateColumns; //"repeat(" + this.children.length + ", auto)"
+
         super.ready();
 
         // Set the child index.
@@ -67,6 +84,10 @@ class TableHeaderElement extends PolymerElement {
             }
         }
         return cells[index]
+    }
+
+    getSize(){
+        return this.children.length;
     }
 
 }

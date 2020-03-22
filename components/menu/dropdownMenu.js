@@ -141,7 +141,7 @@ class DropdownMenuElement extends PolymerElement {
         "tag": "div",
         "id": item.id,
         "class": "menu_item_div",
-        "style": "display: block; position: relative; z-index: 1; padding: 2px 4px 2px 4px; margin: 1px; min-width: 300px; transition: all .2s ease; position: relative; z-index: 1; padding: 2px 4px 2px 4px; margin: 1px; min-width: 300px; transition: all .2s ease; color: " + this.color + ";"
+        "style": "display: block; position: relative; z-index: 1; padding: 2px 4px 2px 4px; min-width: 300px; transition: all .2s ease; position: relative; z-index: 1; padding: 2px 4px 2px 4px; min-width: 300px; transition: all .2s ease; color: " + this.color + ";"
       }).down(); // separate items from top.
 
       if (item.separator == true) {

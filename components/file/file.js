@@ -315,6 +315,9 @@ class FilePaneElement extends PolymerElement {
           // Closure to capture the file information.
           reader.onload = (function (info, filePaneElement) {
             return function (e) {
+              if (!filePaneElement.path.endsWith("/")) {
+                filePaneElement.path += "/";
+              }
               var fileInfo = {
                 "Name": info.name,
                 "Size": info.size,

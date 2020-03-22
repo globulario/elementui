@@ -22,7 +22,7 @@ class Expression {
     this.deleteBtn = this.panel.appendElement({
       "tag": "paper-icon-button",
       "icon": "close",
-      "style": "height: 18px; width: 18px; padding: 1px;"
+      "style": "height: 18px; width: 18px; padding: 1px; align-self: center;"
     }).down(); // The expression panel.
 
     this.expressionPanel = this.panel.appendElement({
@@ -70,10 +70,12 @@ class Expression {
     this.operatorDiv.element.onclick = function (operatorSelector, operatorValueDiv) {
       return function (evt) {
         evt.stopPropagation();
-
         if (operatorSelector.element.style.display == "none") {
-          operatorSelector.element.style.display = "";
+          operatorSelector.element.style.display = "block";
           operatorValueDiv.element.style.display = "none";
+        }else{
+          operatorSelector.element.style.display = "none";
+          operatorValueDiv.element.style.display = "block";
         }
       };
     }(this.operatorSelector, this.operatorValueDiv); // The value div.
@@ -241,12 +243,11 @@ class NumericExpression extends Expression {
     this.displayValueDiv.element.innerHTML = "0";
     this.displayValueDiv.element.style.minWidth = "60px";
   }
+
   /**
    * Evaluate the filter.
    * Return the list of rows that meet the expression.
    */
-
-
   evaluate() {
     // The rows that meet the expression.
     var rows = [];
@@ -389,22 +390,20 @@ class StringExpression extends Expression {
       };
     }(this, lst));
   }
+
   /**
    * Implement empty function.
    */
-
-
   isEmpty() {
     if (this.operatorSelector.element.value != "not_empty" && this.operatorSelector.element.value != "empty") {
       return this.input.element.value == "";
     }
   }
+
   /**
    * Evaluate the filter.
    * Return the list of rows that meet the expression.
    */
-
-
   evaluate() {
     // The rows that meet the expression.
     var rows = [];
@@ -485,12 +484,11 @@ class BooleanExpression extends Expression {
 
     this.selectorDiv.element.innerHTML = "value";
   }
+
   /**
    * Evaluate the filter.
    * Return the list of rows that meet the expression.
    */
-
-
   evaluate() {
     var rows = [];
     var op = this.operatorSelector.element.options[this.operatorSelector.element.selectedIndex].value;
@@ -1120,7 +1118,7 @@ class Filter {
     this.clearFileterBtn = this.filterMenu.appendElement({
       "tag": "paper-icon-button",
       "icon": "close",
-      "style": "height: 18px; width: 18px; padding: 1px;",
+      "style": "height: 18px; width: 18px; padding: 1px; align-self: center;",
       "title": "clear the content of filter"
     }).down();
     this.deleteFileterBtn = this.filterMenu.appendElement({
@@ -1148,10 +1146,8 @@ class Filter {
           }
         } // remove the filter.
 
-
         filter.getColors().push(filter.color);
         filter.panel.element.parentNode.removeChild(filter.panel.element);
-
         if (filter.parent.expressions.length > 1) {
           filter.parent.andOrBtn.element.style.display = "block";
         } else if (filter.parent.expressions.length >= 1 && filter.parent.filters.length >= 1) {
@@ -1199,7 +1195,6 @@ class Filter {
         return false;
       }
     } // if it contain filter.
-
 
     return this.filters.length == 0;
   }
@@ -1375,11 +1370,10 @@ class TableFilterElement extends PolymerElement {
     this.filter = null;
     this.panel = null;
   }
+
   /**
    * The internal component properties.
    */
-
-
   static get properties() {
     return {
       /**
@@ -1389,50 +1383,61 @@ class TableFilterElement extends PolymerElement {
       onfilter: Function
     };
   }
+
+
+  static get template() {
+    return html`
+    <style>
+        .filter-panel {
+            /** display empty filter **/
+            max-height: 350px;
+            
+            /** Position properties **/
+            flex-direction: column;
+            align-items: stretch;
+
+            /** can be overide **/
+            background-color: white;
+            color: grey;
+
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        }
+
+    </style>
+    <div id="filter" style="z-index: 100;">
+        <iron-icon id="ascSortBtn" icon="filter-list" style="height: 18px; display: none;"></iron-icon>
+    </div>
+    `
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    
+  }
+
   /**
    * That function is call when the table is ready to be diplay.
    */
-
-
   ready() {
-    this.innerHTML = `
-        <style>
-            .filter-panel {
-                /** display empty filter **/
-                max-height: 350px;
-                
-                /** Position properties **/
-                position: absolute;
-                flex-direction: column;
-                align-items: stretch;
-
-                /** can be overide **/
-                background-color: white;
-                color: grey;
-
-                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
-            }
-
-        </style>
-        <div>
-            <iron-icon id="ascSortBtn" icon="filter-list" style="height: 18px; display: none;"></iron-icon>
-        </div>
-        `;
     super.ready();
+
+    this.div = this.shadowRoot.getElementById("filter")
     this.table = this.parentNode.parentNode.parentNode;
     this.header = this.parentNode.parentNode; // The parent cell.
 
     this.headerCell = this.parentNode;
-    this.filterBtn = this.children[1].children[0];
+    this.filterBtn = this.shadowRoot.getElementById("ascSortBtn")
     this.headerCell.style.position = "relative";
     this.headerCell.style.paddingRight = "25px";
-    this.style.position = "absolute";
-    this.style.right = "0px";
+    this.div.style.position = "absolute";
+    this.div.style.top = "2px"
+
     this.parentNode.addEventListener("mouseover", function (filter) {
       return function () {
         filter.filterBtn.style.display = "block";
       };
     }(this));
+
     this.parentNode.addEventListener("mouseout", function (filter) {
       return function () {
         // test if some filter are applied...
@@ -1448,35 +1453,13 @@ class TableFilterElement extends PolymerElement {
         }
       };
     }(this));
+    
     this.panel = createElement(document.createElement("div"));
-    document.body.appendChild(this.panel.element);
+    this.div.appendChild(this.panel.element)
     this.panel.element.className = "filter-panel";
     this.panel.element.style.minWidth = "160px";
     this.panel.element.style.display = "none";
-    this.panel.element.style.left = "0px";
-    this.panel.element.style.zIndex = 100; // So here I will create content of the filter.
-    // Here I will hide the filter panel if the mouse get out of it.
 
-    document.body.addEventListener("mousemove", function (filter, filterPanel) {
-      return function (evt) {
-        if (filterPanel.style.display != "none") {
-          var isOutX = !(evt.pageX > filterPanel.offsetLeft && evt.pageX < filterPanel.offsetLeft + filterPanel.offsetWidth + 35);
-          var isOutY = !(evt.pageY + 20 > filterPanel.offsetTop && evt.pageY < filterPanel.offsetTop + filterPanel.offsetHeight + 200);
-          var isIn = !(isOutX || isOutY);
-
-          if (!isIn) {
-            // hide it.
-            filterPanel.style.display = "none"; // Remove empty expressions.
-
-            for (var i = 0; i < filter.filter.expressions.length; i++) {
-              if (filter.filter.expressions[i].isEmpty()) {
-                filter.filter.expressions[i].deleteBtn.element.click();
-              }
-            }
-          }
-        }
-      };
-    }(this, this.panel.element));
     var filterDiv = this.panel.appendElement({
       "tag": "div",
       "style": "width: 100%; height: 100%; flex: 1; display: flex; flex-direction: column; border-bottom: 1px solid grey; "
@@ -1486,11 +1469,13 @@ class TableFilterElement extends PolymerElement {
       "tag": "div",
       "style": "width: 100%; margin-bottom: 2px; display: flex; justify-content: flex-end;"
     }).down();
+
     var applyBtn = buttonDiv.appendElement({
       "tag": "button",
       "innerHtml": "Apply",
       "style": "background-color: white; border: none; margin: 2px; font-size: 14px; -webkit-font-smoothing; antialiased; font-weight:normal;font-family:'Roboto', 'Noto', sans-serif;"
     }).down();
+
     var okBtn = buttonDiv.appendElement({
       "tag": "button",
       "innerHtml": "Ok",
@@ -1545,10 +1530,10 @@ class TableFilterElement extends PolymerElement {
         /** TODO be sure that the panel is inside the screen... */
       };
     }(this, this.parentNode.parentNode.parentNode));
+
     /**
      * Display the panel...
      */
-
     this.filterBtn.onclick = function (tableFilter) {
       return function () {
         if (tableFilter.panel.element.style.display == "none") {

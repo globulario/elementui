@@ -5,7 +5,7 @@ import '@polymer/iron-icons/iron-icons.js';
 import '@polymer/paper-ripple/paper-ripple.js';
 
 import { createElement } from "../element.js";
-import { randomUUID, parseFunction } from "../utility.js";
+import { parseFunction, isString } from "../utility.js";
 /**
  * Tab element.
  */
@@ -199,8 +199,13 @@ class TabPanelElement extends PolymerElement {
       }).down();
 
       if (this.onrefresh != null) {
+        var onrefresh
         // set the refresh listener
-        var onrefresh = parseFunction(this.onrefresh);
+        if(isString(this.onrefresh )){
+          onrefresh = parseFunction(this.onrefresh);
+        }else{
+          onrefresh = this.onrefresh;
+        }
 
         this.refreshBtn.element.onclick = function (tabPanel, onrefresh) {
           return function () {
@@ -218,7 +223,12 @@ class TabPanelElement extends PolymerElement {
       }).down(); // set the on close listner.
 
       if (this.onclosetab != null) {
-        var onclose = parseFunction(this.onclosetab);
+        var onclose
+        if(isString(this.onclosetab )){
+          onclose = parseFunction(this.onclosetab);
+        }else{
+          onclose = this.onclosetab;
+        }
 
         this.closeBtn.element.onclick = function (onclose, tabPanel) {
           return function () {
@@ -390,7 +400,13 @@ class TabPanelElement extends PolymerElement {
     this.activeTab = this.tabs[index];
 
     if (this.onsettab != undefined) {
-      var onsettab = parseFunction(this.onsettab)
+      var onsettab
+      if(isString(this.onsettab )){
+        onsettab = parseFunction(this.onsettab);
+      }else{
+        onsettab = this.onsettab;
+      }
+      
       onsettab(this.activeTab)
     }
   }

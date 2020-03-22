@@ -1,6 +1,6 @@
 // List of imported functionality.
-import { createElement } from "../element.js";
-import { isString, getCoords, getMouseX, getMouseY } from "../utility.js";
+import { createElement } from "@davecourtois/elementui/components/element.js";
+import { isString, getCoords, getMouseX, getMouseY } from "@davecourtois/elementui/components/utility.js";
 var server = undefined;
 /*
  * This class is use to insert auto-completion functionnality
@@ -16,7 +16,6 @@ export function attachAutoComplete(control, elementLst, autoComplete, selectCall
     control.element.parentNode.style.position = "relative";
   } // The value must be in the list...
 
-
   if (autoComplete == undefined) {
     autoComplete = true;
   }
@@ -26,22 +25,18 @@ export function attachAutoComplete(control, elementLst, autoComplete, selectCall
       if (this.style.display == "none" && autocompleteDiv != null) {
         // if the mouse is not over the autocompleteDiv...
         var box = autocompleteDiv.element.getBoundingClientRect(); // If the mouse i not over the box.
-
         var isOver = getMouseX() > box.left && getMouseX() < box.right && getMouseY() < box.bottom && getMouseY() > box.top;
 
         if (!isOver) {
           var isSelect = false;
-
           for (var id in autocompleteDiv.childs) {
             var c = autocompleteDiv.childs[id];
-
             if (c.element.style.backgroundColor == "darkgrey") {
               c.element.click();
               isSelect = true;
               break;
             }
           } // if  no selection is made...
-
 
           if (!isSelect) {
             autocompleteDiv.removeAllChilds();
@@ -62,6 +57,19 @@ export function attachAutoComplete(control, elementLst, autoComplete, selectCall
       var minWidth = control.element.offsetWidth + "px";
 
       if (control.element.value.length >= 1) {
+        if(autoComplete){
+          let isPrefix = false;
+          for(i=0; i < elementLst.length; i++){
+              if(elementLst[i].toUpperCase().startsWith(control.element.value.toUpperCase())){
+                isPrefix = true;
+                break; // at least one element has v for prefix.
+              }
+          }
+          if(!isPrefix){
+            control.element.value = control.element.value.substring(0, control.element.value.length - 1)
+          }
+        }
+
         if (autocompleteDiv == null) {
           // Create the style programatically.
           var style = document.createElement('style');
@@ -103,13 +111,10 @@ export function attachAutoComplete(control, elementLst, autoComplete, selectCall
         autocompleteDiv.element.style.minWidth = minWidth;
         autocompleteDiv.element.style.top = coord.top + control.element.offsetHeight + "px";
         autocompleteDiv.element.style.left = coord.left + -1 + "px";
-        autocompleteDiv.element.style.display = ""; // Filter the values...
-
+        autocompleteDiv.element.style.display = "block"; // Filter the values...
         var values = [];
-
         for (var i = 0; i < elementLst.length; i++) {
           var value = elementLst[i];
-
           if (value.toUpperCase().startsWith(control.element.value.toUpperCase())) {
             values.push(value);
           }
@@ -119,7 +124,6 @@ export function attachAutoComplete(control, elementLst, autoComplete, selectCall
           // Append the element...
           for (var i = 0; i < values.length; i++) {
             var value = values[i];
-
             if (!isString(value)) {
               value = value.toString();
             }
@@ -135,10 +139,8 @@ export function attachAutoComplete(control, elementLst, autoComplete, selectCall
             elementDiv.element.onclick = function (control, autocompleteDiv, value, selectCallback) {
               return function (evt) {
                 evt.stopPropagation();
-
                 if (control.element.value != value) {
                   control.element.value = value;
-
                   if (selectCallback != undefined) {
                     // Here the caller want to get control...
                     selectCallback(value);
@@ -148,24 +150,20 @@ export function attachAutoComplete(control, elementLst, autoComplete, selectCall
                 if (control.element.onchange != null) {
                   control.element.onchange();
                 }
-
                 currentIndex = -1;
                 autocompleteDiv.removeAllChilds();
                 autocompleteDiv.element.style.display = "none";
               };
             }(control, autocompleteDiv, values[i], selectCallback);
           } // Display the list...
-
-
           autocompleteDiv.element.style.display = "block";
         } else if (values.length == 1) {
           if (selectCallback == undefined) {
             control.element.value = values[0];
-            control.element.select();
+            autocompleteDiv.element.style.display = "none";
           } else {
             selectCallback(values[0]);
           }
-
           autocompleteDiv.element.style.display = "none";
         } else if (values.length == 0) {
           autocompleteDiv.element.style.display = "none";
@@ -178,10 +176,8 @@ export function attachAutoComplete(control, elementLst, autoComplete, selectCall
 
       if (evt.keyCode == 40 || evt.keyCode == 38 || evt.keyCode == 13) {
         var max = Object.keys(autocompleteDiv.childs).length;
-
         if (max > 0) {
           var index = currentIndex;
-
           if (evt.keyCode == 40) {
             if (index < max - 1) {
               index++;
@@ -212,8 +208,6 @@ export function attachAutoComplete(control, elementLst, autoComplete, selectCall
           var c = autocompleteDiv.childs[id];
           c.element.style.backgroundColor = "";
         } // exit the selection.
-
-
         control.element.blur();
       }
     };

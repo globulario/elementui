@@ -1,6 +1,6 @@
 {
   "name": "@davecourtois/elementui",
-  "version": "1.0.17",
+  "version": "1.0.20",
   "description": "A collection of web-component based on polymer 3",
   "main": "index.js",
   "scripts": {

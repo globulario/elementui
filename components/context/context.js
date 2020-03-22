@@ -9,7 +9,6 @@ import { isString, parseFunction } from "../utility.js";
 /**
  * The context element.
  */
-
 export class ContextElement extends PolymerElement {
   constructor() {
     super();
@@ -20,11 +19,10 @@ export class ContextElement extends PolymerElement {
     this.shadow = 0;
     this.isActive = false;
   }
+
   /**
    * The internal component properties.
    */
-
-
   static get properties() {
     return {
       title: String,
@@ -94,10 +92,10 @@ export class ContextElement extends PolymerElement {
 
 }
 customElements.define('context-element', ContextElement);
+
 /**
  * The context selector.
  */
-
 export class ContextSelectorElement extends PolymerElement {
   constructor() {
     super();
@@ -105,11 +103,10 @@ export class ContextSelectorElement extends PolymerElement {
     this.context_buttons = null;
     this.context_divs = null;
   }
+
   /**
    * The internal component properties.
    */
-
-
   static get properties() {
     return {
       side: String,
@@ -119,11 +116,10 @@ export class ContextSelectorElement extends PolymerElement {
       oncontextchange: Function
     };
   }
+
   /**
    *
    */
-
-
   static get template() {
     return html`
             <style>
@@ -152,11 +148,10 @@ export class ContextSelectorElement extends PolymerElement {
             <slot></slot>
     `;
   }
+
   /**
    * That function is call when the table is ready to be diplay.
    */
-
-
   ready() {
     super.ready();
     this.style.display = "flex";
@@ -257,11 +252,10 @@ export class ContextSelectorElement extends PolymerElement {
       };
     }(this, offset);
   }
+
   /**
    * Append context.
    */
-
-
   appendContext(context) {
     // Set the context properties.
     context.side = this.side;
@@ -285,11 +279,21 @@ export class ContextSelectorElement extends PolymerElement {
     context.div.style.bottom = "0px";
     context.div.style.borderRight = "1px solid lightgray";
 
+    window.addEventListener('resize', (event) => {
+      // do stuff here
+      var isActive = context.button.classList.contains("active_context_button");
+      if (isActive) {
+        if (this.side == "left") {
+          this.context_divs.style.marginRight = context.div.offsetWidth + "px";
+        } else {
+          this.context_divs.style.marginLeft = context.div.offsetWidth + "px";
+        }
+      }
+    });
+
     context.button.onclick = function (contextSelector, context) {
       return function () {
         var isActive = context.button.classList.contains("active_context_button");
-
-
         for (var id in contextSelector.contexts) {
           var ctx = contextSelector.contexts[id];
           ctx.button.classList.remove("active_context_button"); // Here I will also hide it div
@@ -304,7 +308,6 @@ export class ContextSelectorElement extends PolymerElement {
 
         context.isActive = true;
         context.div.style.display = ""; // Append the visible.
-
         context.button.classList.add("active_context_button"); // If the context is active.
 
         if (isActive) {
@@ -335,7 +338,6 @@ export class ContextSelectorElement extends PolymerElement {
       context.div.appendChild(context.children[i]);
     } // Append the div.
 
-
     this.context_divs.appendChild(context.div);
     this.contexts[context.id] = context;
   }
@@ -350,13 +352,10 @@ export class ContextSelectorElement extends PolymerElement {
       return
     }
 
-
     for (var id in this.contexts) {
       var ctx = this.contexts[id];
       ctx.button.classList.remove("active_context_button"); // Here I will also hide it div
-
       ctx.div.style.display = "none";
-
       if (context.div.style.transform.length == 0) {
         ctx.div.style.transform = "";
       }
@@ -364,7 +363,7 @@ export class ContextSelectorElement extends PolymerElement {
 
     context.button.classList.add("active_context_button"); // If the context is active.
     context.div.style.display = ""; // Append the visible.
-    
+
     if (this.side == "left") {
       this.context_divs.style.marginRight = this.minwidth + "px";
     } else {
