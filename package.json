@@ -4,7 +4,8 @@
   "description": "A collection of web-component based on  boostrap 5",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode development && cp index.html dist && cp -r node_modules/bootstrap/dist/css dist && /home/dave/go/src/github.com/globulario/Globular/Globular deploy -u=sa -p=adminadmin -name=elementui -a=localhost -path=dist"
   },
   "repository": {
     "type": "git",
@@ -12,20 +13,30 @@
   },
   "keywords": [
     "dialog",
-    "file",
-    "autocomplete",
-    "growl",
     "table",
     "menu",
-    "login",
-    "language"
+    "login"
   ],
   "dependencies": {
+    "@popperjs/core": "^2.9.2",
+    "bootstrap": "^5.0.2",
+    "popper.js": "^1.16.1"
   },
   "author": "Dave Courtois",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/globulario/elementui/issues"
   },
-  "homepage": "https://github.com/globulario/elementui#readme"
+  "homepage": "https://github.com/globulario/elementui#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.2.6",
+    "css-loader": "^5.2.6",
+    "postcss": "^8.3.5",
+    "postcss-loader": "^6.1.1",
+    "sass": "^1.35.1",
+    "sass-loader": "^12.1.0",
+    "style-loader": "^3.0.0",
+    "webpack": "^5.42.0",
+    "webpack-cli": "^4.7.2"
+  }
 }
