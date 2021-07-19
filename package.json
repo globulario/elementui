@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode development && cp index.html dist && cp -r node_modules/bootstrap/dist/css dist && /home/dave/go/src/github.com/globulario/Globular/Globular deploy -u=sa -p=adminadmin -name=elementui -a=localhost -path=dist"
+    "build": "webpack --mode development && cp index.html dist && cp -r node_modules/bootstrap/dist/css dist && /usr/local/share/globular/Globular deploy -u=sa -p=adminadmin -name=elementui -a=localhost -path=dist"
   },
   "repository": {
     "type": "git",

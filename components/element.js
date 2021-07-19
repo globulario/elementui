@@ -29,18 +29,26 @@ export class BootstrapElement extends HTMLElement {
 
     // Make the sub-element keep same attribute as it web-component.
     setElementAttributes() {
-        for (var i = this.element.attributes.length - 1; i >= 0; i--) {
-            this.element.removeAttribute(this.element.attributes[i].name);
+        if(this.className_ == undefined){
+            this.className_ = this.element.className
         }
+
+        this.element.className = this.className_
 
         for (var i = 0; i < this.attributes.length; i++) {
             var attrib = this.attributes[i];
-            this.element.setAttribute(attrib.name, attrib.value)
+
+            if(attrib.name == "tabindex" || attrib.name == "src" || attrib.name == "href" ){
+                this.element.setAttribute(attrib.name, attrib.value)
+            }else{
+                this.element.classList.add(attrib.name)
+            }
         }
     }
 
     // The connection callback.
     connectedCallback() {
+        
         this.setElementAttributes()
     }
 

@@ -24,7 +24,6 @@ export class Accordion extends BootstrapElement {
         // The class...
         for (var i = 0; i < this.children.length; i++) {
             let item = this.children[i]
-            this.element.appendChild(item.element)
             if (this.getAttribute("always-open") != undefined) {
                 item.onshow = () => {
                     for (var i = 0; i < this.children.length; i++) {
@@ -92,8 +91,6 @@ export class AccordionItem extends BootstrapElement {
         })
 
         this.body = this.shadowRoot.querySelector(".accordion-body")
-
-
         this.onshow = null
 
 
@@ -131,12 +128,6 @@ export class AccordionItem extends BootstrapElement {
     // The connection callback.
     connectedCallback() {
         super.connectedCallback()
-        // The class...
-        let title = this.querySelector('[slot="title"]')
-        this.button.innerHTML = title.innerHTML
-        title.parentNode.removeChild(title)
-        this.body.innerHTML = this.innerHTML
-
     }
 
 }

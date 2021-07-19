@@ -16,13 +16,12 @@ export class Button extends BootstrapElement {
         this.shadowRoot.innerHTML = `
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <button type="button" class="btn"> 
-            <slot></slot> 
+            <slot>
+            </slot> 
         </button>
-       
         `
 
         this.element = this.shadowRoot.querySelector("button")
-        this.element.innerHTML = this.innerHTML;
     }
 
     // The connection callback.
@@ -42,12 +41,14 @@ export class ButtonGroup extends BootstrapElement {
     // Create the applicaiton view.
     constructor() {
         super()
-
+  
         // Innitialisation of the layout.
         this.shadowRoot.innerHTML = `
         <link href="css/bootstrap.min.css" rel="stylesheet">
-        <div class="btn-group" role="group"></div>
-        <slot></slot>
+        <div class="btn-group" role="group">
+            <slot></slot>
+        </div>
+        
         `
         this.element = this.shadowRoot.querySelector(".btn-group")
 
@@ -56,10 +57,7 @@ export class ButtonGroup extends BootstrapElement {
     // The connection callback.
     connectedCallback() {
         super.connectedCallback()
-        // The class...
-        for (var i = 0; i < this.children.length; i++) {
-            this.element.appendChild(this.children[i].element)
-        }
+       
     }
 
 }
